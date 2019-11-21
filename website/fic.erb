@@ -1,0 +1,58 @@
+<% wrap_layout :inner do %>
+  <% content_for :sidebar do %>
+    <div class="docs-sidebar hidden-print affix-top" role="complementary">
+      <ul class="nav docs-sidenav">
+        <li<%= sidebar_current("docs-home") %>>
+          <a href="/docs/providers/index.html">All Providers</a>
+        </li>
+
+        <li<%= sidebar_current("docs-fic-index") %>>
+          <a href="/docs/providers/fic/index.html">Flexible InterConnect Provider</a>
+        </li>
+
+        <li<%= sidebar_current("docs-fic-datasource") %>>
+          <a href="#">Data Sources</a>
+        </li>
+
+        <li<%= sidebar_current("docs-fic-resource-eri") %>>
+          <a href="#">ERI(Enterprise Reliable InterConnect) Resources</a>
+          <ul class="nav nav-visible">
+            <li<%= sidebar_current("docs-fic-resource-eri-firewall-component-v1") %>>
+              <a href="/docs/providers/fic/r/eri_firewall_component_v1.html">fic_eri_firewall_component_v1</a>
+            </li>
+            <li<%= sidebar_current("docs-fic-resource-eri-nat-component-v1") %>>
+              <a href="/docs/providers/fic/r/eri_nat_component_v1.html">fic_eri_nat_component_v1</a>
+            </li>
+            <li<%= sidebar_current("docs-fic-resource-eri-nat-global_ip_address_set-v1") %>>
+              <a href="/docs/providers/fic/r/eri_nat_global_ip_address_set_v1.html">fic_eri_global_ip_address_set_v1</a>
+            </li>
+            <li<%= sidebar_current("docs-fic-resource-eri-port-to-port-connection-v1") %>>
+              <a href="/docs/providers/fic/r/eri_port_to_port_connection_v1.html">fic_eri_port_to_port_connection_v1</a>
+            </li>
+            <li<%= sidebar_current("docs-fic-resource-eri-port-v1") %>>
+              <a href="/docs/providers/fic/r/eri_port_v1.html">fic_eri_port_v1</a>
+            </li>
+            <li<%= sidebar_current("docs-fic-resource-eri-router-paired-to-ecl-connection-v1") %>>
+              <a href="/docs/providers/fic/r/eri_router_paired_to_ecl_connection_v1.html">fic_eri_router_paierd_to_ecl_connection_v1</a>
+            </li>
+            <li<%= sidebar_current("docs-fic-resource-eri-router-single-to-ecl-connection-v1") %>>
+              <a href="/docs/providers/fic/r/eri_router_single_to_ecl_connection_v1.html">fic_eri_router_single_to_ecl_connection_v1</a>
+            </li>
+            <li<%= sidebar_current("docs-fic-resource-eri-router-to-ecl-connection-v1") %>>
+              <a href="/docs/providers/fic/r/eri_router_to_ecl_connection_v1.html">fic_eri_router_to_ecl_connection_v1</a>
+            </li>
+            <li<%= sidebar_current("docs-fic-resource-eri-router-to-uno-connection-v1") %>>
+              <a href="/docs/providers/fic/r/eri_router_to_uno_connection_v1.html">fic_eri_router_to_uno_connection_v1</a>
+            </li>
+            <li<%= sidebar_current("docs-fic-resource-eri-router-v1") %>>
+              <a href="/docs/providers/fic/r/eri_router_v1.html">fic_eri_router_v1</a>
+            </li>
+          </ul>
+        </li>
+
+      </ul>
+    </div>
+  <% end %>
+
+  <%= yield %>
+  <% end %>
