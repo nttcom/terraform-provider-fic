@@ -23,6 +23,8 @@ var (
 	OS_ECL_TENANT_ID          = os.Getenv("OS_ECL_TENANT_ID")
 	OS_ECL_API_KEY            = os.Getenv("OS_ECL_API_KEY")
 	OS_ECL_API_SECRET_KEY     = os.Getenv("OS_ECL_API_SECRET_KEY")
+	OS_AZURE_SERVICE_KEY      = os.Getenv("OS_AZURE_SERVICE_KEY")
+	OS_AZURE_SHARED_KEY       = os.Getenv("OS_AZURE_SHARED_KEY")
 )
 
 var testAccProviders map[string]terraform.ResourceProvider
@@ -88,6 +90,19 @@ func testAccPreCheckRouterToECLConnection(t *testing.T) {
 	}
 	if OS_ECL_API_SECRET_KEY == "" {
 		t.Skip("OS_ECL_API_SECRET_KEY must be set for Port tests")
+	}
+}
+
+func testAccPreCheckAzureConnection(t *testing.T) {
+	testAccPreCheckRequiredEnvVars(t)
+
+	msg := "Test for Azure Connection is skipped because %s is not set."
+
+	if OS_AZURE_SERVICE_KEY == "" {
+		t.Skip(fmt.Sprintf(msg, "OS_AZURE_SERVICE_KEY"))
+	}
+	if OS_AZURE_SHARED_KEY == "" {
+		t.Skip(fmt.Sprintf(msg, "OS_AZURE_SHARED_KEY"))
 	}
 }
 
