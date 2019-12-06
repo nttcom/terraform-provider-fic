@@ -64,8 +64,9 @@ func resourceEriNATGlobalIPAddressSetV1() *schema.Resource {
 			},
 
 			"addresses": &schema.Schema{
-				Type:     schema.TypeInt,
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 		},
 	}
