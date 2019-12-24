@@ -5,8 +5,8 @@ import (
 	"crypto/x509"
 	"fmt"
 
-	gofic "github.com/nttcom/go-fic"
-	"github.com/nttcom/go-fic/fic"
+	"github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic/fic/utils"
 
 	"github.com/nttcom/terraform-provider-fic/fic/clientconfig"
 
@@ -42,7 +42,7 @@ type Config struct {
 	Username          string
 	UserID            string
 
-	OsClient *gofic.ProviderClient
+	OsClient *fic.ProviderClient
 }
 
 func (c *Config) LoadAndValidate() error {
@@ -125,7 +125,7 @@ func (c *Config) LoadAndValidate() error {
 		return err
 	}
 
-	client, err := fic.NewClient(ao.IdentityEndpoint)
+	client, err := utils.NewClient(ao.IdentityEndpoint)
 	if err != nil {
 		return err
 	}
@@ -184,7 +184,7 @@ func (c *Config) LoadAndValidate() error {
 		},
 	}
 
-	err = fic.Authenticate(client, *ao)
+	err = utils.Authenticate(client, *ao)
 	if err != nil {
 		return err
 	}
@@ -204,12 +204,12 @@ func (c *Config) determineRegion(region string) string {
 	return region
 }
 
-func (c *Config) getEndpointType() gofic.Availability {
-	return gofic.AvailabilityPublic
+func (c *Config) getEndpointType() fic.Availability {
+	return fic.AvailabilityPublic
 }
 
-func (c *Config) eriV1Client(region string) (*gofic.ServiceClient, error) {
-	return fic.NewEriV1(c.OsClient, gofic.EndpointOpts{
+func (c *Config) eriV1Client(region string) (*fic.ServiceClient, error) {
+	return utils.NewEriV1(c.OsClient, fic.EndpointOpts{
 		Region:       c.determineRegion(region),
 		Availability: c.getEndpointType(),
 	})

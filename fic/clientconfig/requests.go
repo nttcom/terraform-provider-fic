@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"strings"
 
-	gofic "github.com/nttcom/go-fic"
-	"github.com/nttcom/go-fic/fic"
+	"github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic/fic/utils"
 
 	"gopkg.in/yaml.v2"
 )
@@ -224,12 +224,12 @@ func GetCloudFromYAML(opts *ClientOpts) (*Cloud, error) {
 	return cloud, nil
 }
 
-// AuthOptions creates a gofic.AuthOptions structure with the
+// AuthOptions creates a fic.AuthOptions structure with the
 // settings found in a specific cloud entry of a clouds.yaml file or
 // based on authentication settings given in ClientOpts.
 //
 // This attempts to be a single point of entry for all Flexible InterConnect authentication.
-func AuthOptions(opts *ClientOpts) (*gofic.AuthOptions, error) {
+func AuthOptions(opts *ClientOpts) (*fic.AuthOptions, error) {
 	cloud := new(Cloud)
 
 	// If no opts were passed in, create an empty ClientOpts.
@@ -339,8 +339,8 @@ func determineIdentityAPI(cloud *Cloud, opts *ClientOpts) string {
 	return identityAPI
 }
 
-// v2auth creates a v2-compatible gofic.AuthOptions struct.
-func v2auth(cloud *Cloud, opts *ClientOpts) (*gofic.AuthOptions, error) {
+// v2auth creates a v2-compatible fic.AuthOptions struct.
+func v2auth(cloud *Cloud, opts *ClientOpts) (*fic.AuthOptions, error) {
 	// Environment variable overrides.
 	envPrefix := "OS_"
 	if opts != nil && opts.EnvPrefix != "" {
@@ -395,7 +395,7 @@ func v2auth(cloud *Cloud, opts *ClientOpts) (*gofic.AuthOptions, error) {
 		}
 	}
 
-	ao := &gofic.AuthOptions{
+	ao := &fic.AuthOptions{
 		IdentityEndpoint: cloud.AuthInfo.AuthURL,
 		TokenID:          cloud.AuthInfo.Token,
 		Username:         cloud.AuthInfo.Username,
@@ -407,8 +407,8 @@ func v2auth(cloud *Cloud, opts *ClientOpts) (*gofic.AuthOptions, error) {
 	return ao, nil
 }
 
-// v3auth creates a v3-compatible gofic.AuthOptions struct.
-func v3auth(cloud *Cloud, opts *ClientOpts) (*gofic.AuthOptions, error) {
+// v3auth creates a v3-compatible fic.AuthOptions struct.
+func v3auth(cloud *Cloud, opts *ClientOpts) (*fic.AuthOptions, error) {
 	// Environment variable overrides.
 	envPrefix := "OS_"
 	if opts != nil && opts.EnvPrefix != "" {
@@ -512,7 +512,7 @@ func v3auth(cloud *Cloud, opts *ClientOpts) (*gofic.AuthOptions, error) {
 	}
 
 	// Build a scope and try to do it correctly.
-	scope := new(gofic.AuthScope)
+	scope := new(fic.AuthScope)
 
 	if !isProjectScoped(cloud.AuthInfo) {
 		if cloud.AuthInfo.DomainID != "" {
@@ -534,7 +534,7 @@ func v3auth(cloud *Cloud, opts *ClientOpts) (*gofic.AuthOptions, error) {
 		}
 	}
 
-	ao := &gofic.AuthOptions{
+	ao := &fic.AuthOptions{
 		Scope:            scope,
 		IdentityEndpoint: cloud.AuthInfo.AuthURL,
 		TokenID:          cloud.AuthInfo.Token,
@@ -562,7 +562,7 @@ func v3auth(cloud *Cloud, opts *ClientOpts) (*gofic.AuthOptions, error) {
 
 	// Check for absolute minimum requirements.
 	if ao.IdentityEndpoint == "" {
-		err := gofic.ErrMissingInput{Argument: "auth_url"}
+		err := fic.ErrMissingInput{Argument: "auth_url"}
 		return nil, err
 	}
 
@@ -571,17 +571,17 @@ func v3auth(cloud *Cloud, opts *ClientOpts) (*gofic.AuthOptions, error) {
 
 // AuthenticatedClient is a convenience function to get a new provider client
 // based on a clouds.yaml entry.
-func AuthenticatedClient(opts *ClientOpts) (*gofic.ProviderClient, error) {
+func AuthenticatedClient(opts *ClientOpts) (*fic.ProviderClient, error) {
 	ao, err := AuthOptions(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	return fic.AuthenticatedClient(*ao)
+	return utils.AuthenticatedClient(*ao)
 }
 
 // NewServiceClient is a convenience function to get a new service client.
-func NewServiceClient(service string, opts *ClientOpts) (*gofic.ServiceClient, error) {
+func NewServiceClient(service string, opts *ClientOpts) (*fic.ServiceClient, error) {
 	cloud := new(Cloud)
 
 	// If no opts were passed in, create an empty ClientOpts.
@@ -641,13 +641,13 @@ func NewServiceClient(service string, opts *ClientOpts) (*gofic.ServiceClient, e
 		region = v
 	}
 
-	eo := gofic.EndpointOpts{
+	eo := fic.EndpointOpts{
 		Region: region,
 	}
 
 	switch service {
 	case "fic-eri":
-		return fic.NewEriV1(pClient, eo)
+		return utils.NewEriV1(pClient, eo)
 
 	}
 

@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
-	gofic "github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic"
 	connections "github.com/nttcom/go-fic/fic/eri/v1/port_to_azure_microsoft_connections"
 )
 
@@ -358,11 +358,11 @@ func resourceEriPortToAzureMicrosoftConnectionV1Delete(d *schema.ResourceData, m
 	return nil
 }
 
-func resourcePortToAzureMicrosoftConnectionV1StateRefreshFunc(client *gofic.ServiceClient, connectionID string) resource.StateRefreshFunc {
+func resourcePortToAzureMicrosoftConnectionV1StateRefreshFunc(client *fic.ServiceClient, connectionID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		v, err := connections.Get(client, connectionID).Extract()
 		if err != nil {
-			if _, ok := err.(gofic.ErrDefault404); ok {
+			if _, ok := err.(fic.ErrDefault404); ok {
 				return v, "Deleted", nil
 			}
 			return nil, "", err

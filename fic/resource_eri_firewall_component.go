@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
 
-	gofic "github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic"
 	"github.com/nttcom/go-fic/fic/eri/v1/routers/components/firewalls"
 )
 
@@ -377,14 +377,14 @@ func resourceEriFirewallComponentV1Deactivate(d *schema.ResourceData, meta inter
 	return nil
 }
 
-func FirewallComponentV1StateRefreshFunc(client *gofic.ServiceClient, id string) resource.StateRefreshFunc {
+func FirewallComponentV1StateRefreshFunc(client *fic.ServiceClient, id string) resource.StateRefreshFunc {
 	routerID := strings.Split(id, "/")[0]
 	firewallID := strings.Split(id, "/")[1]
 
 	return func() (interface{}, string, error) {
 		v, err := firewalls.Get(client, routerID, firewallID).Extract()
 		if err != nil {
-			if _, ok := err.(gofic.ErrDefault404); ok {
+			if _, ok := err.(fic.ErrDefault404); ok {
 				return v, "Deleted", nil
 			}
 			return nil, "", err

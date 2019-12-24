@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 
-	gofic "github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic"
 	"github.com/nttcom/go-fic/fic/eri/v1/routers"
 )
 
@@ -263,11 +263,11 @@ func resourceEriRouterV1Delete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func RouterV1StateRefreshFunc(client *gofic.ServiceClient, portID string) resource.StateRefreshFunc {
+func RouterV1StateRefreshFunc(client *fic.ServiceClient, portID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		v, err := routers.Get(client, portID).Extract()
 		if err != nil {
-			if _, ok := err.(gofic.ErrDefault404); ok {
+			if _, ok := err.(fic.ErrDefault404); ok {
 				return v, "Deleted", nil
 			}
 			return nil, "", err

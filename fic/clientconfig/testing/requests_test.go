@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	gofic "github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic"
 	"github.com/nttcom/terraform-provider-fic/fic/clientconfig"
 
 	th "github.com/nttcom/go-fic/testhelper"
@@ -82,7 +82,7 @@ func TestAuthOptionsOSCLOUD(t *testing.T) {
 func TestAuthOptionsCreationFromCloudsYAML(t *testing.T) {
 	os.Unsetenv("OS_CLOUD")
 
-	allClouds := map[string]*gofic.AuthOptions{
+	allClouds := map[string]*fic.AuthOptions{
 		"hawaii":     HawaiiAuthOpts,
 		"florida":    FloridaAuthOpts,
 		"california": CaliforniaAuthOpts,
@@ -112,7 +112,7 @@ func TestAuthOptionsCreationFromCloudsYAML(t *testing.T) {
 func TestAuthOptionsCreationFromLegacyCloudsYAML(t *testing.T) {
 	os.Unsetenv("OS_CLOUD")
 
-	allClouds := map[string]*gofic.AuthOptions{
+	allClouds := map[string]*fic.AuthOptions{
 		"alberta": AlbertaAuthOpts,
 		"yukon":   YukonAuthOpts,
 	}
@@ -134,7 +134,7 @@ func TestAuthOptionsCreationFromLegacyCloudsYAML(t *testing.T) {
 func TestAuthOptionsCreationFromClientConfig(t *testing.T) {
 	os.Unsetenv("OS_CLOUD")
 
-	expectedAuthOpts := map[string]*gofic.AuthOptions{
+	expectedAuthOpts := map[string]*fic.AuthOptions{
 		"hawaii":     HawaiiAuthOpts,
 		"florida":    FloridaAuthOpts,
 		"california": CaliforniaAuthOpts,
@@ -164,7 +164,7 @@ func TestAuthOptionsCreationFromClientConfig(t *testing.T) {
 func TestAuthOptionsCreationFromLegacyClientConfig(t *testing.T) {
 	os.Unsetenv("OS_CLOUD")
 
-	expectedAuthOpts := map[string]*gofic.AuthOptions{
+	expectedAuthOpts := map[string]*fic.AuthOptions{
 		"alberta": AlbertaAuthOpts,
 		"yukon":   YukonAuthOpts,
 	}
@@ -194,7 +194,7 @@ func TestAuthOptionsCreationFromEnv(t *testing.T) {
 		"texas":      TexasEnvAuth,
 	}
 
-	expectedAuthOpts := map[string]*gofic.AuthOptions{
+	expectedAuthOpts := map[string]*fic.AuthOptions{
 		"hawaii":     HawaiiAuthOpts,
 		"florida":    FloridaAuthOpts,
 		"california": CaliforniaAuthOpts,
@@ -227,7 +227,7 @@ func TestAuthOptionsCreationFromLegacyEnv(t *testing.T) {
 		"yukon":   YukonEnvAuth,
 	}
 
-	expectedAuthOpts := map[string]*gofic.AuthOptions{
+	expectedAuthOpts := map[string]*fic.AuthOptions{
 		"alberta": AlbertaAuthOpts,
 		"yukon":   YukonAuthOpts,
 	}

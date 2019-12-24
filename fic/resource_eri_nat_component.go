@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
 
-	gofic "github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic"
 	"github.com/nttcom/go-fic/fic/eri/v1/routers/components/nats"
 )
 
@@ -349,14 +349,14 @@ func updateSourceNAPTORDestinationNAT(d *schema.ResourceData, meta interface{}) 
 	return nil
 }
 
-func NATComponentV1StateRefreshFunc(client *gofic.ServiceClient, id string) resource.StateRefreshFunc {
+func NATComponentV1StateRefreshFunc(client *fic.ServiceClient, id string) resource.StateRefreshFunc {
 	routerID := strings.Split(id, "/")[0]
 	natID := strings.Split(id, "/")[1]
 
 	return func() (interface{}, string, error) {
 		v, err := nats.Get(client, routerID, natID).Extract()
 		if err != nil {
-			if _, ok := err.(gofic.ErrDefault404); ok {
+			if _, ok := err.(fic.ErrDefault404); ok {
 				return v, "Deleted", nil
 			}
 			return nil, "", err

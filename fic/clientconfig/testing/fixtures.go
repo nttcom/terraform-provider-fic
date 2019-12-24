@@ -1,7 +1,7 @@
 package testing
 
 import (
-	gofic "github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic"
 	"github.com/nttcom/terraform-provider-fic/fic/clientconfig"
 )
 
@@ -87,8 +87,8 @@ var HawaiiEnvAuth = map[string]string{
 	"OS_DOMAIN_NAME":  "default",
 }
 
-var HawaiiAuthOpts = &gofic.AuthOptions{
-	Scope: &gofic.AuthScope{
+var HawaiiAuthOpts = &fic.AuthOptions{
+	Scope: &fic.AuthScope{
 		ProjectName: "Some Project",
 		DomainName:  "default",
 	},
@@ -159,8 +159,8 @@ var FloridaEnvAuth = map[string]string{
 	"OS_USER_DOMAIN_ID": "abcde",
 }
 
-var FloridaAuthOpts = &gofic.AuthOptions{
-	Scope: &gofic.AuthScope{
+var FloridaAuthOpts = &fic.AuthOptions{
+	Scope: &fic.AuthScope{
 		ProjectID: "12345",
 	},
 	IdentityEndpoint: "https://fl.example.com:5000/v3",
@@ -206,8 +206,8 @@ var CaliforniaEnvAuth = map[string]string{
 	"OS_USER_DOMAIN_NAME":    "default",
 }
 
-var CaliforniaAuthOpts = &gofic.AuthOptions{
-	Scope: &gofic.AuthScope{
+var CaliforniaAuthOpts = &fic.AuthOptions{
+	Scope: &fic.AuthScope{
 		ProjectName: "Some Project",
 		DomainName:  "default",
 	},
@@ -246,8 +246,8 @@ var ArizonaEnvAuth = map[string]string{
 	"OS_DOMAIN_NAME":  "default",
 }
 
-var ArizonaAuthOpts = &gofic.AuthOptions{
-	Scope: &gofic.AuthScope{
+var ArizonaAuthOpts = &fic.AuthOptions{
+	Scope: &fic.AuthScope{
 		ProjectName: "Some Project",
 		DomainName:  "default",
 	},
@@ -293,8 +293,8 @@ var NewMexicoEnvAuth = map[string]string{
 	"OS_DOMAIN_NAME":         "default",
 }
 
-var NewMexicoAuthOpts = &gofic.AuthOptions{
-	Scope: &gofic.AuthScope{
+var NewMexicoAuthOpts = &fic.AuthOptions{
+	Scope: &fic.AuthScope{
 		ProjectName: "Some Project",
 		DomainName:  "Some Domain",
 	},
@@ -335,8 +335,8 @@ var NevadaEnvAuth = map[string]string{
 	"OS_PROJECT_DOMAIN_NAME": "Some Domain",
 }
 
-var NevadaAuthOpts = &gofic.AuthOptions{
-	Scope: &gofic.AuthScope{
+var NevadaAuthOpts = &fic.AuthOptions{
+	Scope: &fic.AuthScope{
 		ProjectName: "Some Project",
 		DomainName:  "Some Domain",
 	},
@@ -379,8 +379,8 @@ var TexasEnvAuth = map[string]string{
 	"OS_DEFAULT_DOMAIN":   "default",
 }
 
-var TexasAuthOpts = &gofic.AuthOptions{
-	Scope: &gofic.AuthScope{
+var TexasAuthOpts = &fic.AuthOptions{
+	Scope: &fic.AuthScope{
 		ProjectName: "Some Project",
 		DomainID:    "default",
 	},
@@ -432,7 +432,7 @@ var AlbertaEnvAuth = map[string]string{
 	"OS_IDENTITY_API_VERSION": "2.0",
 }
 
-var AlbertaAuthOpts = &gofic.AuthOptions{
+var AlbertaAuthOpts = &fic.AuthOptions{
 	IdentityEndpoint: "https://ab.example.com:5000/v2.0",
 	Username:         "jdoe",
 	Password:         "password",
@@ -465,7 +465,7 @@ var YukonEnvAuth = map[string]string{
 	"OS_IDENTITY_API_VERSION": "2",
 }
 
-var YukonAuthOpts = &gofic.AuthOptions{
+var YukonAuthOpts = &fic.AuthOptions{
 	IdentityEndpoint: "https://yt.example.com:5000/v2.0",
 	TokenID:          "12345",
 	TenantName:       "Some Project",
