@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	gofic "github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic"
 
 	"github.com/hashicorp/terraform/flatmap"
 	"github.com/hashicorp/terraform/helper/resource"
@@ -21,7 +21,7 @@ import (
 // BuildRequest takes an opts struct and builds a request body for
 // GO-FIC to execute
 func BuildRequest(opts interface{}, parent string) (map[string]interface{}, error) {
-	b, err := gofic.BuildRequestBody(opts, "")
+	b, err := fic.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func BuildRequest(opts interface{}, parent string) (map[string]interface{}, erro
 // CheckDeleted checks the error to see if it's a 404 (Not Found) and, if so,
 // sets the resource ID to the empty string instead of throwing an error.
 func CheckDeleted(d *schema.ResourceData, err error, msg string) error {
-	if _, ok := err.(gofic.ErrDefault404); ok {
+	if _, ok := err.(fic.ErrDefault404); ok {
 		d.SetId("")
 		return nil
 	}
@@ -105,9 +105,9 @@ func FormatHeaders(headers http.Header, seperator string) string {
 
 func checkForRetryableError(err error) *resource.RetryError {
 	switch errCode := err.(type) {
-	case gofic.ErrDefault500:
+	case fic.ErrDefault500:
 		return resource.RetryableError(err)
-	case gofic.ErrUnexpectedResponseCode:
+	case fic.ErrUnexpectedResponseCode:
 		switch errCode.Actual {
 		case 409, 503:
 			return resource.RetryableError(err)

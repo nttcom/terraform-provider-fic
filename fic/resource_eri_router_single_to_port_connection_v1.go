@@ -466,11 +466,11 @@ func resourceEriRouterSingleToPortConnectionV1Delete(d *schema.ResourceData, met
 	return nil
 }
 
-// func RouterToPortConnectionV1StateRefreshFunc(client *gofic.ServiceClient, connectionID string) resource.StateRefreshFunc {
+// func RouterToPortConnectionV1StateRefreshFunc(client *fic.ServiceClient, connectionID string) resource.StateRefreshFunc {
 // 	return func() (interface{}, string, error) {
 // 		v, err := connections.Get(client, connectionID).Extract()
 // 		if err != nil {
-// 			if _, ok := err.(gofic.ErrDefault404); ok {
+// 			if _, ok := err.(fic.ErrDefault404); ok {
 // 				return v, "Deleted", nil
 // 			}
 // 			return nil, "", err

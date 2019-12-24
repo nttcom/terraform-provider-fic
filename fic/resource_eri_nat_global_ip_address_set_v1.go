@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
 
-	gofic "github.com/nttcom/go-fic"
+	"github.com/nttcom/go-fic"
 	"github.com/nttcom/go-fic/fic/eri/v1/routers/components/nat_global_ip_address_sets"
 )
 
@@ -188,7 +188,7 @@ func resourceEriNATGlobalIPAddressSetV1Delete(d *schema.ResourceData, meta inter
 	return nil
 }
 
-func NATGlobalIPAddressSetV1StateRefreshFunc(client *gofic.ServiceClient, id string) resource.StateRefreshFunc {
+func NATGlobalIPAddressSetV1StateRefreshFunc(client *fic.ServiceClient, id string) resource.StateRefreshFunc {
 	routerID := strings.Split(id, "/")[0]
 	natID := strings.Split(id, "/")[1]
 	globalIPAddressSetID := strings.Split(id, "/")[2]
@@ -196,7 +196,7 @@ func NATGlobalIPAddressSetV1StateRefreshFunc(client *gofic.ServiceClient, id str
 	return func() (interface{}, string, error) {
 		v, err := nat_global_ip_address_sets.Get(client, routerID, natID, globalIPAddressSetID).Extract()
 		if err != nil {
-			if _, ok := err.(gofic.ErrDefault404); ok {
+			if _, ok := err.(fic.ErrDefault404); ok {
 				return v, "Deleted", nil
 			}
 			return nil, "", err
