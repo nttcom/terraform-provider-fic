@@ -3,6 +3,10 @@ package fic
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
+
+	"github.com/hashicorp/terraform/helper/validation"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/nttcom/go-fic/fic/eri/v1/switches"
@@ -31,21 +35,10 @@ func dataSourceEriSwitchV1() *schema.Resource {
 				Computed: true,
 			},
 
-			"port_types": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"port_type": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"available": {
-							Type:     schema.TypeBool,
-							Computed: true,
-						},
-					},
-				},
+			"port_type": {
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.StringInSlice([]string{"1G", "10G"}, false),
 			},
 
 			"number_of_available_vlans": {
@@ -58,12 +51,12 @@ func dataSourceEriSwitchV1() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"vlan_range": {
-							Type:     schema.TypeString,
+						"start": {
+							Type:     schema.TypeInt,
 							Computed: true,
 						},
-						"available": {
-							Type:     schema.TypeBool,
+						"end": {
+							Type:     schema.TypeInt,
 							Computed: true,
 						},
 					},
@@ -94,6 +87,7 @@ func dataSourceEriSwitchV1Read(d *schema.ResourceData, meta interface{}) error {
 		switchName string
 		area       string
 		location   string
+		portType   string
 	}{}
 
 	if v, ok := d.GetOk("name"); ok {
@@ -107,6 +101,8 @@ func dataSourceEriSwitchV1Read(d *schema.ResourceData, meta interface{}) error {
 	if v, ok := d.GetOk("location"); ok {
 		opts.location = v.(string)
 	}
+
+	opts.portType = d.Get("port_type").(string)
 
 	var matches []switches.Switch
 	for _, sw := range sws {
@@ -122,7 +118,12 @@ func dataSourceEriSwitchV1Read(d *schema.ResourceData, meta interface{}) error {
 			continue
 		}
 
-		matches = append(matches, sw)
+		for _, pt := range sw.PortTypes {
+			if pt.Available && opts.portType == pt.Type {
+				matches = append(matches, sw)
+				break
+			}
+		}
 	}
 
 	if len(matches) == 0 {
@@ -143,20 +144,30 @@ func dataSourceEriSwitchV1Read(d *schema.ResourceData, meta interface{}) error {
 	d.Set("location", match.Location)
 	d.Set("number_of_available_vlans", match.NumberOfAvailableVLANs)
 
-	var portTypes []map[string]interface{}
-	for _, pt := range match.PortTypes {
-		portTypes = append(portTypes, map[string]interface{}{
-			"port_type": pt.Type,
-			"available": pt.Available,
-		})
-	}
-	d.Set("port_types", portTypes)
-
-	var vlanRanges []map[string]interface{}
+	var vlanRanges []map[string]int
 	for _, vr := range match.VLANRanges {
-		vlanRanges = append(vlanRanges, map[string]interface{}{
-			"vlan_range": vr.Range,
-			"available":  vr.Available,
+		if !vr.Available {
+			continue
+		}
+
+		vlans := strings.Split(vr.Range, "-")
+		if len(vlans) != 2 {
+			return fmt.Errorf("vlan range is invalid format: %s", vr.Range)
+		}
+
+		start, err := strconv.Atoi(vlans[0])
+		if err != nil {
+			return fmt.Errorf("start of vlan range %s is not integer: %s", vr.Range, err)
+		}
+
+		end, err := strconv.Atoi(vlans[1])
+		if err != nil {
+			return fmt.Errorf("end of vlan range %s is not integer: %s", vr.Range, err)
+		}
+
+		vlanRanges = append(vlanRanges, map[string]int{
+			"start": start,
+			"end":   end,
 		})
 	}
 	d.Set("vlan_ranges", vlanRanges)
