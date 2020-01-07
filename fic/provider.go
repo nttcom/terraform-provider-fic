@@ -177,7 +177,9 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 
-		DataSourcesMap: map[string]*schema.Resource{},
+		DataSourcesMap: map[string]*schema.Resource{
+			"fic_eri_switch_v1": dataSourceEriSwitchV1(),
+		},
 
 		ResourcesMap: map[string]*schema.Resource{
 			"fic_eri_firewall_component_v1":                   resourceEriFirewallComponentV1(),
