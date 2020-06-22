@@ -35,6 +35,11 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"bandwidth": {
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.StringInSlice([]string{"10M", "50M", "100M", "200M", "300M", "400M", "500M", "1G", "2G", "5G", "10G"}, false),
+			},
 			"source": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -102,13 +107,40 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 							MaxItems: 1,
 							Elem:     destinationSchema,
 						},
+						"qos_type": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
 					},
 				},
 			},
-			"bandwidth": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"10M", "50M", "100M", "200M", "300M", "400M", "500M", "1G", "2G", "5G", "10G"}, false),
+			"redundant": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"tenant_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"area": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"operation_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"operation_status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"primary_connected_nw_address": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"secondary_connected_nw_address": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}
