@@ -1,7 +1,10 @@
 package fic
 
 import (
+	"fmt"
 	"regexp"
+
+	connections "github.com/nttcom/go-fic/fic/eri/v1/router_paired_to_gcp_connections"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
@@ -11,7 +14,7 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 	validInterconnects := []string{
 		"Equinix-TY2-2", "@Tokyo-CC2-2", "Equinix-TY2-3", "@Tokyo-CC2-3", "Equinix-OS1-1", "NTT-Dojima2-1",
 	}
-	destinationSchema := &schema.Resource{
+	interconnectSchema := &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"interconnect": {
 				Type:         schema.TypeString,
@@ -29,6 +32,8 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 	}
 
 	return &schema.Resource{
+		Read: resourceEriRouterPairedToGCPConnectionV1Read,
+
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -99,13 +104,13 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 							Type:     schema.TypeList,
 							Required: true,
 							MaxItems: 1,
-							Elem:     destinationSchema,
+							Elem:     interconnectSchema,
 						},
 						"secondary": {
 							Type:     schema.TypeList,
 							Required: true,
 							MaxItems: 1,
-							Elem:     destinationSchema,
+							Elem:     interconnectSchema,
 						},
 						"qos_type": {
 							Type:     schema.TypeString,
@@ -134,14 +139,87 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"primary_connected_nw_address": {
+			"primary_connected_network_address": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"secondary_connected_nw_address": {
+			"secondary_connected_network_address": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
 		},
 	}
+}
+
+func resourceEriRouterPairedToGCPConnectionV1Read(d *schema.ResourceData, meta interface{}) error {
+	config := meta.(*Config)
+	client, err := config.eriV1Client(GetRegion(d, config))
+	if err != nil {
+		return fmt.Errorf("error creating FIC ERI client: %s", err)
+	}
+
+	conn, err := connections.Get(client, d.Id()).Extract()
+	if err != nil {
+		return CheckDeleted(d, err, "connection")
+	}
+
+	d.Set("name", conn.Name)
+	d.Set("bandwidth", conn.Bandwidth)
+	d.Set("source", flattenSource(conn.Source))
+	d.Set("destination", flattenDestination(conn.Destination))
+	d.Set("redundant", conn.Redundant)
+	d.Set("tenant_id", conn.TenantID)
+	//d.Set("area", conn.Area)
+	d.Set("operation_id", conn.OperationID)
+	d.Set("operation_status", conn.OperationStatus)
+	d.Set("primary_connected_network_address", conn.PrimaryConnectedNetworkAddress)
+	d.Set("secondary_connected_network_address", conn.SecondaryConnectedNetworkAddress)
+
+	return nil
+}
+
+func flattenSource(in connections.Source) []interface{} {
+	var out []interface{}
+	m := make(map[string]interface{})
+
+	m["router_id"] = in.RouterID
+	m["group_name"] = in.GroupName
+	m["route_filter"] = flattenRouteFilter(in.RouteFilter)
+
+	out = append(out, m)
+	return out
+}
+
+func flattenRouteFilter(in connections.RouteFilter) []interface{} {
+	var out []interface{}
+	m := make(map[string]interface{})
+
+	m["in"] = in.In
+	m["out"] = in.Out
+
+	out = append(out, m)
+	return out
+}
+
+func flattenDestination(in connections.Destination) []interface{} {
+	var out []interface{}
+	m := make(map[string]interface{})
+
+	m["primary"] = flattenInterconnect(in.Primary)
+	m["secondary"] = flattenInterconnect(in.Secondary)
+	m["qos_type"] = in.QosType
+
+	out = append(out, m)
+	return out
+}
+
+func flattenInterconnect(in connections.DestinationHAInfo) []interface{} {
+	var out []interface{}
+	m := make(map[string]interface{})
+
+	m["interconnect"] = in.Interconnect
+	m["paring_key"] = in.PairingKey
+
+	out = append(out, m)
+	return out
 }
