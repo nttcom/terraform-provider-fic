@@ -1,8 +1,14 @@
 package fic
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
+	"time"
+
+	"github.com/nttcom/go-fic"
+
+	"github.com/hashicorp/terraform/helper/resource"
 
 	connections "github.com/nttcom/go-fic/fic/eri/v1/router_paired_to_gcp_connections"
 
@@ -32,7 +38,16 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 	}
 
 	return &schema.Resource{
-		Read: resourceEriRouterPairedToGCPConnectionV1Read,
+		Create: resourceEriRouterPairedToGCPConnectionV1Create,
+		Read:   resourceEriRouterPairedToGCPConnectionV1Read,
+
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(60 * time.Minute),
+		},
+
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -148,6 +163,98 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 				Computed: true,
 			},
 		},
+	}
+}
+
+func resourceEriRouterPairedToGCPConnectionV1Create(d *schema.ResourceData, meta interface{}) error {
+	config := meta.(*Config)
+	client, err := config.eriV1Client(GetRegion(d, config))
+	if err != nil {
+		return fmt.Errorf("error creating FIC client: %w", err)
+	}
+
+	opts := &connections.CreateOpts{
+		Name:        d.Get("name").(string),
+		Source:      expandSource(d.Get("source").([]interface{})),
+		Destination: expandDestination(d.Get("destination").([]interface{})),
+		Bandwidth:   d.Get("bandwidth").(string),
+	}
+
+	conn, err := connections.Create(client, opts).Extract()
+	if err != nil {
+		return fmt.Errorf("error creating FIC paired router to GCP connection: %w", err)
+	}
+
+	refreshFunc := func() (interface{}, string, error) {
+		conn, err := connections.Get(client, conn.ID).Extract()
+		if err != nil {
+			var e *fic.ErrDefault404
+			if errors.As(err, &e) {
+				return nil, "", nil
+			}
+			return nil, "", err
+		}
+
+		if conn.OperationStatus == "Error" {
+			return conn, conn.OperationStatus, fmt.Errorf("operation status is now %s", conn.OperationStatus)
+		}
+
+		return conn, conn.OperationStatus, nil
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending:    []string{"Processing"},
+		Target:     []string{"Completed"},
+		Refresh:    refreshFunc,
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 5 * time.Second,
+	}
+
+	if _, err = stateConf.WaitForState(); err != nil {
+		return fmt.Errorf("error waiting for connection (%s) to become ready: %w", conn.ID, err)
+	}
+
+	d.SetId(conn.ID)
+
+	return resourceEriRouterPairedToGCPConnectionV1Read(d, meta)
+}
+
+func expandSource(in []interface{}) connections.Source {
+	m := in[0].(map[string]interface{})
+
+	return connections.Source{
+		RouterID:    m["router_id"].(string),
+		GroupName:   m["group_name"].(string),
+		RouteFilter: expandRouteFilter(m["route_filter"].([]interface{})),
+	}
+}
+
+func expandRouteFilter(in []interface{}) connections.RouteFilter {
+	m := in[0].(map[string]interface{})
+
+	return connections.RouteFilter{
+		In:  m["in"].(string),
+		Out: m["out"].(string),
+	}
+}
+
+func expandDestination(in []interface{}) connections.Destination {
+	m := in[0].(map[string]interface{})
+
+	return connections.Destination{
+		QosType:   "guarantee",
+		Primary:   expandInterconnect(m["primary"].([]interface{})),
+		Secondary: expandInterconnect(m["secondary"].([]interface{})),
+	}
+}
+
+func expandInterconnect(in []interface{}) connections.DestinationHAInfo {
+	m := in[0].(map[string]interface{})
+
+	return connections.DestinationHAInfo{
+		Interconnect: m["interconnect"].(string),
+		PairingKey:   m["paring_key"].(string),
 	}
 }
 
