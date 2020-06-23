@@ -40,6 +40,7 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceEriRouterPairedToGCPConnectionV1Create,
 		Read:   resourceEriRouterPairedToGCPConnectionV1Read,
+		Delete: resourceEriRouterPairedToGCPConnectionV1Delete,
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(60 * time.Minute),
@@ -329,4 +330,20 @@ func flattenInterconnect(in connections.DestinationHAInfo) []interface{} {
 
 	out = append(out, m)
 	return out
+}
+
+func resourceEriRouterPairedToGCPConnectionV1Delete(d *schema.ResourceData, meta interface{}) error {
+	config := meta.(*Config)
+	client, err := config.eriV1Client(GetRegion(d, config))
+	if err != nil {
+		return fmt.Errorf("error creating FIC client: %w", err)
+	}
+
+	if err = connections.Delete(client, d.Id()).ExtractErr(); err != nil {
+		return CheckDeleted(d, err, "connection")
+	}
+
+	d.SetId("")
+
+	return nil
 }
