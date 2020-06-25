@@ -378,7 +378,7 @@ func resourceEriRouterPairedToGCPConnectionV1Delete(d *schema.ResourceData, meta
 	}
 
 	if err = connections.Delete(client, d.Id()).ExtractErr(); err != nil {
-		return CheckDeleted(d, err, "connection")
+		return CheckDeleted(d, err, "error deleting FIC paired router to GCP connection")
 	}
 
 	d.SetId("")
