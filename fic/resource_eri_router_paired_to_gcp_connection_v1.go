@@ -40,10 +40,12 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceEriRouterPairedToGCPConnectionV1Create,
 		Read:   resourceEriRouterPairedToGCPConnectionV1Read,
+		Update: resourceEriRouterPairedToGCPConnectionV1Update,
 		Delete: resourceEriRouterPairedToGCPConnectionV1Delete,
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(60 * time.Minute),
+			Update: schema.DefaultTimeout(60 * time.Minute),
 		},
 
 		Importer: &schema.ResourceImporter{
@@ -186,27 +188,10 @@ func resourceEriRouterPairedToGCPConnectionV1Create(d *schema.ResourceData, meta
 		return fmt.Errorf("error creating FIC paired router to GCP connection: %w", err)
 	}
 
-	refreshFunc := func() (interface{}, string, error) {
-		conn, err := connections.Get(client, conn.ID).Extract()
-		if err != nil {
-			var e *fic.ErrDefault404
-			if errors.As(err, &e) {
-				return nil, "", nil
-			}
-			return nil, "", err
-		}
-
-		if conn.OperationStatus == "Error" {
-			return conn, conn.OperationStatus, fmt.Errorf("operation status is now %s", conn.OperationStatus)
-		}
-
-		return conn, conn.OperationStatus, nil
-	}
-
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"Processing"},
 		Target:     []string{"Completed"},
-		Refresh:    refreshFunc,
+		Refresh:    gcpConnectionV1Refresh(client, d.Id()),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 5 * time.Second,
@@ -256,6 +241,25 @@ func expandInterconnect(in []interface{}) connections.DestinationHAInfo {
 	return connections.DestinationHAInfo{
 		Interconnect: m["interconnect"].(string),
 		PairingKey:   m["paring_key"].(string),
+	}
+}
+
+func gcpConnectionV1Refresh(c *fic.ServiceClient, id string) func() (interface{}, string, error) {
+	return func() (interface{}, string, error) {
+		conn, err := connections.Get(c, id).Extract()
+		if err != nil {
+			var e *fic.ErrDefault404
+			if errors.As(err, &e) {
+				return nil, "", nil
+			}
+			return nil, "", err
+		}
+
+		if conn.OperationStatus == "Error" {
+			return conn, conn.OperationStatus, fmt.Errorf("operation status is now %s", conn.OperationStatus)
+		}
+
+		return conn, conn.OperationStatus, nil
 	}
 }
 
@@ -330,6 +334,40 @@ func flattenInterconnect(in connections.DestinationHAInfo) []interface{} {
 
 	out = append(out, m)
 	return out
+}
+
+func resourceEriRouterPairedToGCPConnectionV1Update(d *schema.ResourceData, meta interface{}) error {
+	config := meta.(*Config)
+	client, err := config.eriV1Client(GetRegion(d, config))
+	if err != nil {
+		return fmt.Errorf("error creating FIC client: %w", err)
+	}
+
+	opts := connections.UpdateOpts{
+		Source: connections.SourceForUpdate{
+			RouteFilter: expandSource(d.Get("source").([]interface{})).RouteFilter,
+		},
+	}
+
+	conn, err := connections.Update(client, d.Id(), opts).Extract()
+	if err != nil {
+		return fmt.Errorf("error updating FIC paired router to GCP connection: %w", err)
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending:    []string{"Processing"},
+		Target:     []string{"Completed"},
+		Refresh:    gcpConnectionV1Refresh(client, d.Id()),
+		Timeout:    d.Timeout(schema.TimeoutUpdate),
+		Delay:      10 * time.Second,
+		MinTimeout: 5 * time.Second,
+	}
+
+	if _, err = stateConf.WaitForState(); err != nil {
+		return fmt.Errorf("error waiting for connection (%s) to become ready: %w", conn.ID, err)
+	}
+
+	return resourceEriRouterPairedToGCPConnectionV1Read(d, meta)
 }
 
 func resourceEriRouterPairedToGCPConnectionV1Delete(d *schema.ResourceData, meta interface{}) error {
