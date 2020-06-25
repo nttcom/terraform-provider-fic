@@ -105,9 +105,8 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 							ValidateFunc: IntInSlice([]int{10, 30}),
 						},
 						"secondary_med_out": {
-							Type:         schema.TypeInt,
-							Required:     true,
-							ValidateFunc: IntInSlice([]int{20, 40}),
+							Type:     schema.TypeInt,
+							Computed: true,
 						},
 					},
 				},
