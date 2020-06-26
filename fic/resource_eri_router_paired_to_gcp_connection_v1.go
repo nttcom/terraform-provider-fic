@@ -32,7 +32,7 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ForceNew:     true,
-				ValidateFunc: validation.StringMatch(regexp.MustCompile(`^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}/[a-zA-Z0-9-]*/[1,2]$`), ""),
+				ValidateFunc: validation.StringMatch(regexp.MustCompile(`^[a-fA-F\d]{8}(-[a-fA-F\d]{4}){3}-[a-fA-F\d]{12}/[a-zA-Z\d-]*/[1,2]$`), "see https://cloud.google.com/network-connectivity/docs/interconnect/concepts/terminology?_ga=2.264742223.-1966628098.1560150466#pairingkey"),
 			},
 		},
 	}
@@ -54,9 +54,10 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.StringMatch(regexp.MustCompile(`^[\w&()-]{1,64}$`), "must be less than 64 characters in half-width alphanumeric characters and some symbols &()-_"),
 			},
 			"bandwidth": {
 				Type:         schema.TypeString,
@@ -70,9 +71,10 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"router_id": {
-							Type:     schema.TypeString,
-							Required: true,
-							ForceNew: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ForceNew:     true,
+							ValidateFunc: validation.StringMatch(regexp.MustCompile(`^F\d{12}$`), "must be a F + 12-digit number"),
 						},
 						"group_name": {
 							Type:         schema.TypeString,
