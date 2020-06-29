@@ -203,6 +203,7 @@ func resourceEriRouterPairedToGCPConnectionV1Create(d *schema.ResourceData, meta
 	}
 
 	d.SetId(conn.ID)
+	d.Set("operation_id", conn.OperationID)
 
 	return resourceEriRouterPairedToGCPConnectionV1Read(d, meta)
 }
@@ -283,7 +284,6 @@ func resourceEriRouterPairedToGCPConnectionV1Read(d *schema.ResourceData, meta i
 	d.Set("redundant", conn.Redundant)
 	d.Set("tenant_id", conn.TenantID)
 	//d.Set("area", conn.Area)
-	d.Set("operation_id", conn.OperationID)
 	d.Set("operation_status", conn.OperationStatus)
 	d.Set("primary_connected_network_address", conn.PrimaryConnectedNetworkAddress)
 	d.Set("secondary_connected_network_address", conn.SecondaryConnectedNetworkAddress)
@@ -367,6 +367,8 @@ func resourceEriRouterPairedToGCPConnectionV1Update(d *schema.ResourceData, meta
 	if _, err = stateConf.WaitForState(); err != nil {
 		return fmt.Errorf("error waiting for connection (%s) to become ready: %w", conn.ID, err)
 	}
+
+	d.Set("operation_id", conn.OperationID)
 
 	return resourceEriRouterPairedToGCPConnectionV1Read(d, meta)
 }
