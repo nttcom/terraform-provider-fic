@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"fmt"
 
-	"github.com/hashicorp/terraform/httpclient"
+	"github.com/hashicorp/terraform-plugin-sdk/httpclient"
 
 	"github.com/nttcom/go-fic"
 	"github.com/nttcom/go-fic/fic/utils"
@@ -16,7 +16,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/hashicorp/terraform/helper/pathorcontents"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/pathorcontents"
 )
 
 type Config struct {
