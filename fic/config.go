@@ -5,6 +5,8 @@ import (
 	"crypto/x509"
 	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/httpclient"
+
 	"github.com/nttcom/go-fic"
 	"github.com/nttcom/go-fic/fic/utils"
 
@@ -14,8 +16,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/hashicorp/terraform/helper/pathorcontents"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/pathorcontents"
 )
 
 type Config struct {
@@ -41,6 +42,7 @@ type Config struct {
 	UserDomainID      string
 	Username          string
 	UserID            string
+	terraformVersion  string
 
 	OsClient *fic.ProviderClient
 }
@@ -131,7 +133,7 @@ func (c *Config) LoadAndValidate() error {
 	}
 
 	// Set UserAgent
-	client.UserAgent.Prepend(terraform.UserAgentString())
+	client.UserAgent.Prepend(httpclient.TerraformUserAgent(c.terraformVersion))
 
 	config := &tls.Config{}
 	if c.CACertFile != "" {

@@ -7,10 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform/config"
-	"github.com/hashicorp/terraform/helper/pathorcontents"
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/pathorcontents"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
 var (
@@ -145,12 +144,8 @@ func TestAccProvider_caCertFile(t *testing.T) {
 	raw := map[string]interface{}{
 		"cacert_file": caFile,
 	}
-	rawConfig, err := config.NewRawConfig(raw)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
 
-	err = p.Configure(terraform.NewResourceConfig(rawConfig))
+	err = p.Configure(terraform.NewResourceConfigRaw(raw))
 	if err != nil {
 		t.Fatalf("Unexpected err when specifying FIC CA by file: %s", err)
 	}
@@ -173,12 +168,8 @@ func TestAccProvider_caCertString(t *testing.T) {
 	raw := map[string]interface{}{
 		"cacert_file": caContents,
 	}
-	rawConfig, err := config.NewRawConfig(raw)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
 
-	err = p.Configure(terraform.NewResourceConfig(rawConfig))
+	err = p.Configure(terraform.NewResourceConfigRaw(raw))
 	if err != nil {
 		t.Fatalf("Unexpected err when specifying FIC CA by string: %s", err)
 	}
@@ -209,12 +200,8 @@ func TestAccProvider_clientCertFile(t *testing.T) {
 		"cert": certFile,
 		"key":  keyFile,
 	}
-	rawConfig, err := config.NewRawConfig(raw)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
 
-	err = p.Configure(terraform.NewResourceConfig(rawConfig))
+	err = p.Configure(terraform.NewResourceConfigRaw(raw))
 	if err != nil {
 		t.Fatalf("Unexpected err when specifying FIC Client keypair by file: %s", err)
 	}
@@ -243,12 +230,8 @@ func TestAccProvider_clientCertString(t *testing.T) {
 		"cert": certContents,
 		"key":  keyContents,
 	}
-	rawConfig, err := config.NewRawConfig(raw)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
 
-	err = p.Configure(terraform.NewResourceConfig(rawConfig))
+	err = p.Configure(terraform.NewResourceConfigRaw(raw))
 	if err != nil {
 		t.Fatalf("Unexpected err when specifying FIC Client keypair by contents: %s", err)
 	}
