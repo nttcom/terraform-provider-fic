@@ -20,17 +20,15 @@ func TestAccPairedRouterToGCPConnection_basic(t *testing.T) {
 	var connection connections.Connection
 	rName := acctest.RandomWithPrefix("tf-acc-test")
 	resourceName := "fic_eri_router_paired_to_gcp_connection_v1.test"
-	primaryPairingKey := ""
-	secondaryPairingKey := ""
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:      func() { testAccPreCheck(t) },
+		PreCheck:      func() { testAccPreCheckGCPConnection(t) },
 		Providers:     testAccProviders,
 		CheckDestroy:  testAccCheckPairedRouterToGCPConnectionDestroy,
 		IDRefreshName: resourceName,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPairedRouterToGCPConnectionConfig(rName, "10M", "noRoute", "privateRoute", 10, primaryPairingKey, secondaryPairingKey),
+				Config: testAccPairedRouterToGCPConnectionConfig(rName, "10M", "noRoute", "privateRoute", 10),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPairedRouterToGCPConnectionExists(resourceName, &connection),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "name", rName),
@@ -42,9 +40,9 @@ func TestAccPairedRouterToGCPConnection_basic(t *testing.T) {
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.primary_med_out", "10"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.secondary_med_out", "20"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.interconnect", "Equinix-TY2-2"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.pairing_key", primaryPairingKey),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.pairing_key"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.interconnect", "@Tokyo-CC2-2"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.pairing_key", secondaryPairingKey),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.pairing_key"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.qos_type", "guarantee"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "redundant", "true"),
 					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "tenant_id"),
@@ -56,7 +54,7 @@ func TestAccPairedRouterToGCPConnection_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPairedRouterToGCPConnectionConfig(rName, "50M", "fullRoute", "defaultRoute", 30, primaryPairingKey, secondaryPairingKey),
+				Config: testAccPairedRouterToGCPConnectionConfig(rName, "50M", "fullRoute", "defaultRoute", 30),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPairedRouterToGCPConnectionExists(resourceName, &connection),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "name", rName),
@@ -68,9 +66,9 @@ func TestAccPairedRouterToGCPConnection_basic(t *testing.T) {
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.primary_med_out", "30"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.secondary_med_out", "40"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.interconnect", "Equinix-TY2-2"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.pairing_key", primaryPairingKey),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.pairing_key"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.interconnect", "@Tokyo-CC2-2"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.pairing_key", secondaryPairingKey),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.pairing_key"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.qos_type", "guarantee"),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "redundant", "true"),
 					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "tenant_id"),
@@ -147,8 +145,38 @@ func testAccCheckPairedRouterToGCPConnectionDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccPairedRouterToGCPConnectionConfig(rName, bandwidth, routeFilterIn, routeFilterOut string, primaryMEDOut int, primaryPairingKey, secondaryPairingKey string) string {
+func testAccPairedRouterToGCPConnectionConfig(rName, bandwidth, routeFilterIn, routeFilterOut string, primaryMEDOut int) string {
 	return fmt.Sprintf(`
+resource "google_compute_router" "test1" {
+	name = "%[1]s1"
+	network = "default"
+	bgp {
+		asn = 16550
+	}
+}
+
+resource "google_compute_router" "test2" {
+	name = "%[1]s2"
+	network = "default"
+	bgp {
+		asn = 16550
+	}
+}
+
+resource "google_compute_interconnect_attachment" "test1" {
+	name = "%[1]s1"
+	router = google_compute_router.test1.id
+	type = "PARTNER"
+	edge_availability_domain = "AVAILABILITY_DOMAIN_1"
+}
+
+resource "google_compute_interconnect_attachment" "test2" {
+	name = "%[1]s2"
+	router = google_compute_router.test2.id
+	type = "PARTNER"
+	edge_availability_domain = "AVAILABILITY_DOMAIN_2"
+}
+
 resource "fic_eri_router_v1" "test" {
 	name = %[1]q
 	area = "JPEAST"
@@ -171,13 +199,13 @@ resource "fic_eri_router_paired_to_gcp_connection_v1" "test" {
 	destination {
 		primary {
 			interconnect = "Equinix-TY2-2"
-			pairing_key = %[6]q
+			pairing_key = google_compute_interconnect_attachment.test1.pairing_key
 		}
 		secondary {
 			interconnect = "@Tokyo-CC2-2"
-			pairing_key = %[7]q
+			pairing_key = google_compute_interconnect_attachment.test2.pairing_key
 		}
 	}
 }
-`, rName, bandwidth, routeFilterIn, routeFilterOut, primaryMEDOut, primaryPairingKey, secondaryPairingKey)
+`, rName, bandwidth, routeFilterIn, routeFilterOut, primaryMEDOut)
 }

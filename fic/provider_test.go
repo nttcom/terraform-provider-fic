@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/pathorcontents"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/terraform-providers/terraform-provider-google/google"
 )
 
 var (
@@ -33,12 +34,18 @@ var testAccProviderFactories func(providers *[]*schema.Provider) map[string]terr
 func init() {
 	testAccProvider = Provider().(*schema.Provider)
 	testAccProviders = map[string]terraform.ResourceProvider{
-		"fic": testAccProvider,
+		"fic":    testAccProvider,
+		"google": google.Provider().(*schema.Provider),
 	}
 	testAccProviderFactories = func(providers *[]*schema.Provider) map[string]terraform.ResourceProviderFactory {
 		return map[string]terraform.ResourceProviderFactory{
 			"fic": func() (terraform.ResourceProvider, error) {
 				p := Provider()
+				*providers = append(*providers, p.(*schema.Provider))
+				return p, nil
+			},
+			"google": func() (terraform.ResourceProvider, error) {
+				p := google.Provider()
 				*providers = append(*providers, p.(*schema.Provider))
 				return p, nil
 			},
@@ -102,6 +109,20 @@ func testAccPreCheckAzureConnection(t *testing.T) {
 	}
 	if OS_AZURE_SHARED_KEY == "" {
 		t.Skip(fmt.Sprintf(msg, "OS_AZURE_SHARED_KEY"))
+	}
+}
+
+func testAccPreCheckGCPConnection(t *testing.T) {
+	testAccPreCheckRequiredEnvVars(t)
+
+	if os.Getenv("GOOGLE_PROJECT") == "" {
+		t.Skip("GOOGLE_PROJECT must be set for GCP connection tests")
+	}
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		t.Skip("GOOGLE_APPLICATION_CREDENTIALS must be set for GCP connection tests")
+	}
+	if os.Getenv("GOOGLE_REGION") == "" {
+		t.Skip("GOOGLE_REGION must be set for GCP connection tests")
 	}
 }
 
