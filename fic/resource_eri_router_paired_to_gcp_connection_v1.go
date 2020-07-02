@@ -8,12 +8,12 @@ import (
 
 	"github.com/nttcom/go-fic"
 
-	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 
 	connections "github.com/nttcom/go-fic/fic/eri/v1/router_paired_to_gcp_connections"
 
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourcePairedRouterToGCPConnection() *schema.Resource {
