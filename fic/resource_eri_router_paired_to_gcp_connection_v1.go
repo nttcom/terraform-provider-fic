@@ -16,7 +16,7 @@ import (
 	"github.com/hashicorp/terraform/helper/validation"
 )
 
-func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
+func resourcePairedRouterToGCPConnection() *schema.Resource {
 	validInterconnects := []string{
 		"Equinix-TY2-2", "@Tokyo-CC2-2", "Equinix-TY2-3", "@Tokyo-CC2-3", "Equinix-OS1-1", "NTT-Dojima2-1",
 	}
@@ -38,10 +38,10 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 	}
 
 	return &schema.Resource{
-		Create: resourceEriRouterPairedToGCPConnectionV1Create,
-		Read:   resourceEriRouterPairedToGCPConnectionV1Read,
-		Update: resourceEriRouterPairedToGCPConnectionV1Update,
-		Delete: resourceEriRouterPairedToGCPConnectionV1Delete,
+		Create: resourcePairedRouterToGCPConnectionCreate,
+		Read:   resourcePairedRouterToGCPConnectionRead,
+		Update: resourcePairedRouterToGCPConnectionUpdate,
+		Delete: resourcePairedRouterToGCPConnectionDelete,
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(10 * time.Minute),
@@ -171,7 +171,7 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 	}
 }
 
-func resourceEriRouterPairedToGCPConnectionV1Create(d *schema.ResourceData, meta interface{}) error {
+func resourcePairedRouterToGCPConnectionCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	client, err := config.eriV1Client(GetRegion(d, config))
 	if err != nil {
@@ -193,7 +193,7 @@ func resourceEriRouterPairedToGCPConnectionV1Create(d *schema.ResourceData, meta
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"Processing"},
 		Target:     []string{"Completed"},
-		Refresh:    gcpConnectionV1Refresh(client, conn.ID),
+		Refresh:    gcpConnectionRefresh(client, conn.ID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 5 * time.Second,
@@ -206,7 +206,7 @@ func resourceEriRouterPairedToGCPConnectionV1Create(d *schema.ResourceData, meta
 	d.SetId(conn.ID)
 	d.Set("operation_id", conn.OperationID)
 
-	return resourceEriRouterPairedToGCPConnectionV1Read(d, meta)
+	return resourcePairedRouterToGCPConnectionRead(d, meta)
 }
 
 func expandSource(in []interface{}) connections.Source {
@@ -258,7 +258,7 @@ func expandInterconnect(in []interface{}) connections.DestinationHAInfo {
 	}
 }
 
-func gcpConnectionV1Refresh(c *fic.ServiceClient, id string) func() (interface{}, string, error) {
+func gcpConnectionRefresh(c *fic.ServiceClient, id string) func() (interface{}, string, error) {
 	return func() (interface{}, string, error) {
 		conn, err := connections.Get(c, id).Extract()
 		if err != nil {
@@ -277,11 +277,11 @@ func gcpConnectionV1Refresh(c *fic.ServiceClient, id string) func() (interface{}
 	}
 }
 
-func resourceEriRouterPairedToGCPConnectionV1Read(d *schema.ResourceData, meta interface{}) error {
+func resourcePairedRouterToGCPConnectionRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	client, err := config.eriV1Client(GetRegion(d, config))
 	if err != nil {
-		return fmt.Errorf("error creating FIC ERI client: %s", err)
+		return fmt.Errorf("error creating FIC client: %s", err)
 	}
 
 	conn, err := connections.Get(client, d.Id()).Extract()
@@ -351,7 +351,7 @@ func flattenInterconnect(in connections.DestinationHAInfo) []interface{} {
 	return out
 }
 
-func resourceEriRouterPairedToGCPConnectionV1Update(d *schema.ResourceData, meta interface{}) error {
+func resourcePairedRouterToGCPConnectionUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	client, err := config.eriV1Client(GetRegion(d, config))
 	if err != nil {
@@ -376,7 +376,7 @@ func resourceEriRouterPairedToGCPConnectionV1Update(d *schema.ResourceData, meta
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"Processing"},
 		Target:     []string{"Completed"},
-		Refresh:    gcpConnectionV1Refresh(client, conn.ID),
+		Refresh:    gcpConnectionRefresh(client, conn.ID),
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
 		Delay:      10 * time.Second,
 		MinTimeout: 5 * time.Second,
@@ -388,10 +388,10 @@ func resourceEriRouterPairedToGCPConnectionV1Update(d *schema.ResourceData, meta
 
 	d.Set("operation_id", conn.OperationID)
 
-	return resourceEriRouterPairedToGCPConnectionV1Read(d, meta)
+	return resourcePairedRouterToGCPConnectionRead(d, meta)
 }
 
-func resourceEriRouterPairedToGCPConnectionV1Delete(d *schema.ResourceData, meta interface{}) error {
+func resourcePairedRouterToGCPConnectionDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	client, err := config.eriV1Client(GetRegion(d, config))
 	if err != nil {

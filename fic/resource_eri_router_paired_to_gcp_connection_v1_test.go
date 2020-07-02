@@ -16,7 +16,7 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 )
 
-func TestAccEriRouterPairedToGCPConnectionV1_basic(t *testing.T) {
+func TestAccPairedRouterToGCPConnection_basic(t *testing.T) {
 	var connection connections.Connection
 	rName := acctest.RandomWithPrefix("tf-acc-test")
 	resourceName := "fic_eri_router_paired_to_gcp_connection_v1.test"
@@ -26,13 +26,13 @@ func TestAccEriRouterPairedToGCPConnectionV1_basic(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:      func() { testAccPreCheck(t) },
 		Providers:     testAccProviders,
-		CheckDestroy:  testAccCheckRouterPairedToGCPConnectionV1Destroy,
+		CheckDestroy:  testAccCheckPairedRouterToGCPConnectionDestroy,
 		IDRefreshName: resourceName,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccEriRouterPairedToGCPConnectionConfig(rName, "10M", "noRoute", "privateRoute", 10, primaryPairingKey, secondaryPairingKey),
+				Config: testAccPairedRouterToGCPConnectionConfig(rName, "10M", "noRoute", "privateRoute", 10, primaryPairingKey, secondaryPairingKey),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckRouterPairedToGCPConnectionV1Exists(resourceName, &connection),
+					testAccCheckPairedRouterToGCPConnectionExists(resourceName, &connection),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "name", rName),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "bandwidth", "10M"),
 					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.router_id"),
@@ -56,9 +56,9 @@ func TestAccEriRouterPairedToGCPConnectionV1_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccEriRouterPairedToGCPConnectionConfig(rName, "50M", "fullRoute", "defaultRoute", 30, primaryPairingKey, secondaryPairingKey),
+				Config: testAccPairedRouterToGCPConnectionConfig(rName, "50M", "fullRoute", "defaultRoute", 30, primaryPairingKey, secondaryPairingKey),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckRouterPairedToGCPConnectionV1Exists(resourceName, &connection),
+					testAccCheckPairedRouterToGCPConnectionExists(resourceName, &connection),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "name", rName),
 					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "bandwidth", "50M"),
 					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.router_id"),
@@ -93,7 +93,7 @@ func TestAccEriRouterPairedToGCPConnectionV1_basic(t *testing.T) {
 	})
 }
 
-func testAccCheckRouterPairedToGCPConnectionV1Exists(resourceName string, connection *connections.Connection) resource.TestCheckFunc {
+func testAccCheckPairedRouterToGCPConnectionExists(resourceName string, connection *connections.Connection) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
@@ -121,7 +121,7 @@ func testAccCheckRouterPairedToGCPConnectionV1Exists(resourceName string, connec
 	}
 }
 
-func testAccCheckRouterPairedToGCPConnectionV1Destroy(s *terraform.State) error {
+func testAccCheckPairedRouterToGCPConnectionDestroy(s *terraform.State) error {
 	config := testAccProvider.Meta().(*Config)
 	client, err := config.eriV1Client(OS_REGION_NAME)
 	if err != nil {
@@ -147,7 +147,7 @@ func testAccCheckRouterPairedToGCPConnectionV1Destroy(s *terraform.State) error 
 	return nil
 }
 
-func testAccEriRouterPairedToGCPConnectionConfig(rName, bandwidth, routeFilterIn, routeFilterOut string, primaryMEDOut int, primaryPairingKey, secondaryPairingKey string) string {
+func testAccPairedRouterToGCPConnectionConfig(rName, bandwidth, routeFilterIn, routeFilterOut string, primaryMEDOut int, primaryPairingKey, secondaryPairingKey string) string {
 	return fmt.Sprintf(`
 resource "fic_eri_router_v1" "test" {
 	name = %[1]q

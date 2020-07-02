@@ -190,7 +190,7 @@ func Provider() terraform.ResourceProvider {
 			"fic_eri_port_to_port_connection_v1":              resourceEriPortToPortConnectionV1(),
 			"fic_eri_port_v1":                                 resourceEriPortV1(),
 			"fic_eri_router_to_ecl_connection_v1":             resourceEriRouterToECLConnectionV1(),
-			"fic_eri_router_paired_to_gcp_connection_v1":      resourceEriRouterPairedToGCPConnectionV1(),
+			"fic_eri_router_paired_to_gcp_connection_v1":      resourcePairedRouterToGCPConnection(),
 			"fic_eri_router_paired_to_port_connection_v1":     resourceEriRouterPairedToPortConnectionV1(),
 			"fic_eri_router_single_to_port_connection_v1":     resourceEriRouterSingleToPortConnectionV1(),
 			"fic_eri_router_to_azure_microsoft_connection_v1": resourceEriRouterToAzureMicrosoftConnectionV1(),
