@@ -44,8 +44,9 @@ func resourceEriRouterPairedToGCPConnectionV1() *schema.Resource {
 		Delete: resourceEriRouterPairedToGCPConnectionV1Delete,
 
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(60 * time.Minute),
-			Update: schema.DefaultTimeout(60 * time.Minute),
+			Create: schema.DefaultTimeout(10 * time.Minute),
+			Update: schema.DefaultTimeout(10 * time.Minute),
+			Delete: schema.DefaultTimeout(10 * time.Minute),
 		},
 
 		Importer: &schema.ResourceImporter{
@@ -192,7 +193,7 @@ func resourceEriRouterPairedToGCPConnectionV1Create(d *schema.ResourceData, meta
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"Processing"},
 		Target:     []string{"Completed"},
-		Refresh:    gcpConnectionV1Refresh(client, d.Id()),
+		Refresh:    gcpConnectionV1Refresh(client, conn.ID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 5 * time.Second,
@@ -210,11 +211,22 @@ func resourceEriRouterPairedToGCPConnectionV1Create(d *schema.ResourceData, meta
 
 func expandSource(in []interface{}) connections.Source {
 	m := in[0].(map[string]interface{})
+	primaryMEDOut := m["primary_med_out"].(int)
 
 	return connections.Source{
 		RouterID:    m["router_id"].(string),
 		GroupName:   m["group_name"].(string),
 		RouteFilter: expandRouteFilter(m["route_filter"].([]interface{})),
+		Primary: connections.SourceHAInfo{
+			MED: connections.MED{
+				Out: primaryMEDOut,
+			},
+		},
+		Secondary: connections.SourceHAInfo{
+			MED: connections.MED{
+				Out: primaryMEDOut + 10,
+			},
+		},
 	}
 }
 
@@ -242,7 +254,7 @@ func expandInterconnect(in []interface{}) connections.DestinationHAInfo {
 
 	return connections.DestinationHAInfo{
 		Interconnect: m["interconnect"].(string),
-		PairingKey:   m["paring_key"].(string),
+		PairingKey:   m["pairing_key"].(string),
 	}
 }
 
@@ -250,7 +262,7 @@ func gcpConnectionV1Refresh(c *fic.ServiceClient, id string) func() (interface{}
 	return func() (interface{}, string, error) {
 		conn, err := connections.Get(c, id).Extract()
 		if err != nil {
-			var e *fic.ErrDefault404
+			var e fic.ErrDefault404
 			if errors.As(err, &e) {
 				return nil, "", nil
 			}
@@ -283,7 +295,7 @@ func resourceEriRouterPairedToGCPConnectionV1Read(d *schema.ResourceData, meta i
 	d.Set("destination", flattenDestination(conn.Destination))
 	d.Set("redundant", conn.Redundant)
 	d.Set("tenant_id", conn.TenantID)
-	//d.Set("area", conn.Area)
+	d.Set("area", conn.Area)
 	d.Set("operation_status", conn.OperationStatus)
 	d.Set("primary_connected_network_address", conn.PrimaryConnectedNetworkAddress)
 	d.Set("secondary_connected_network_address", conn.SecondaryConnectedNetworkAddress)
@@ -298,6 +310,8 @@ func flattenSource(in connections.Source) []interface{} {
 	m["router_id"] = in.RouterID
 	m["group_name"] = in.GroupName
 	m["route_filter"] = flattenRouteFilter(in.RouteFilter)
+	m["primary_med_out"] = in.Primary.MED.Out
+	m["secondary_med_out"] = in.Secondary.MED.Out
 
 	out = append(out, m)
 	return out
@@ -331,7 +345,7 @@ func flattenInterconnect(in connections.DestinationHAInfo) []interface{} {
 	m := make(map[string]interface{})
 
 	m["interconnect"] = in.Interconnect
-	m["paring_key"] = in.PairingKey
+	m["pairing_key"] = in.PairingKey
 
 	out = append(out, m)
 	return out
@@ -344,10 +358,14 @@ func resourceEriRouterPairedToGCPConnectionV1Update(d *schema.ResourceData, meta
 		return fmt.Errorf("error creating FIC client: %w", err)
 	}
 
+	source := expandSource(d.Get("source").([]interface{}))
 	opts := connections.UpdateOpts{
 		Source: connections.SourceForUpdate{
-			RouteFilter: expandSource(d.Get("source").([]interface{})).RouteFilter,
+			RouteFilter: source.RouteFilter,
+			Primary:     source.Primary,
+			Secondary:   source.Secondary,
 		},
+		Bandwidth: d.Get("bandwidth").(string),
 	}
 
 	conn, err := connections.Update(client, d.Id(), opts).Extract()
@@ -358,7 +376,7 @@ func resourceEriRouterPairedToGCPConnectionV1Update(d *schema.ResourceData, meta
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"Processing"},
 		Target:     []string{"Completed"},
-		Refresh:    gcpConnectionV1Refresh(client, d.Id()),
+		Refresh:    gcpConnectionV1Refresh(client, conn.ID),
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
 		Delay:      10 * time.Second,
 		MinTimeout: 5 * time.Second,
@@ -380,8 +398,26 @@ func resourceEriRouterPairedToGCPConnectionV1Delete(d *schema.ResourceData, meta
 		return fmt.Errorf("error creating FIC client: %w", err)
 	}
 
-	if err = connections.Delete(client, d.Id()).ExtractErr(); err != nil {
-		return CheckDeleted(d, err, "error deleting FIC paired router to GCP connection")
+	err = resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
+		if err := connections.Delete(client, d.Id()).ExtractErr(); err != nil {
+			var e404 fic.ErrDefault404
+			if errors.As(err, &e404) {
+				return nil
+			}
+
+			var e409 fic.ErrDefault409
+			if errors.As(err, &e409) {
+				return resource.RetryableError(err)
+			}
+
+			return resource.NonRetryableError(err)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("error deleting FIC paired router to GCP connection: %w", err)
 	}
 
 	d.SetId("")
