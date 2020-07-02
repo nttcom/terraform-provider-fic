@@ -19,9 +19,9 @@ import (
 func TestAccEriRouterPairedToGCPConnectionV1_basic(t *testing.T) {
 	var connection connections.Connection
 	rName := acctest.RandomWithPrefix("tf-acc-test")
-	resourceName := "fic_eri_router_paired_to_port_connection_v1.test"
-	primaryParingKey := ""
-	secondaryParingKey := ""
+	resourceName := "fic_eri_router_paired_to_gcp_connection_v1.test"
+	primaryPairingKey := ""
+	secondaryPairingKey := ""
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:      func() { testAccPreCheck(t) },
@@ -30,55 +30,55 @@ func TestAccEriRouterPairedToGCPConnectionV1_basic(t *testing.T) {
 		IDRefreshName: resourceName,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccEriRouterPairedToGCPConnectionConfig(rName, "10M", "noRoute", "privateRoute", 10, primaryParingKey, secondaryParingKey),
+				Config: testAccEriRouterPairedToGCPConnectionConfig(rName, "10M", "noRoute", "privateRoute", 10, primaryPairingKey, secondaryPairingKey),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckRouterPairedToGCPConnectionV1Exists(resourceName, &connection),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "name", rName),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "bandwidth", "10M"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.router_id", connection.Source.RouterID),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.group_name", "group_1"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.route_filter.0.in", "noRoute"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.route_filter.0.out", "privateRoute"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.primary_med_out", "10"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.secondary_med_out", "20"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.primary.0.interconnect", "Equinix-TY2-2"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.primary.0.paring_key", ""),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.secondary.0.interconnect", "Equinix-TY2-2"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.secondary.0.paring_key", ""),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.qos_type", "guarantee"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "redundant", "true"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "tenant_id", connection.TenantID),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "area", "JPEAST"),
-					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_port_connection_v1.test", "operation_id"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "opetation_status", "Completed"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "primary_connected_network_address", connection.PrimaryConnectedNetworkAddress),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "secondary_connected_network_address", connection.SecondaryConnectedNetworkAddress),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "name", rName),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "bandwidth", "10M"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.router_id"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.group_name", "group_1"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.route_filter.0.in", "noRoute"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.route_filter.0.out", "privateRoute"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.primary_med_out", "10"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.secondary_med_out", "20"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.interconnect", "Equinix-TY2-2"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.pairing_key", primaryPairingKey),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.interconnect", "@Tokyo-CC2-2"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.pairing_key", secondaryPairingKey),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.qos_type", "guarantee"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "redundant", "true"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "tenant_id"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "area", "JPEAST"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "operation_id"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "operation_status", "Completed"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "primary_connected_network_address"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "secondary_connected_network_address"),
 				),
 			},
 			{
-				Config: testAccEriRouterPairedToGCPConnectionConfig(rName, "50M", "fullRoute", "defaultRoute", 30, primaryParingKey, secondaryParingKey),
+				Config: testAccEriRouterPairedToGCPConnectionConfig(rName, "50M", "fullRoute", "defaultRoute", 30, primaryPairingKey, secondaryPairingKey),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckRouterPairedToGCPConnectionV1Exists(resourceName, &connection),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "name", rName),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "bandwidth", "50M"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.router_id", connection.Source.RouterID),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.group_name", "group_1"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.route_filter.0.in", "fullRoute"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.route_filter.0.out", "defaultRoute"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.primary_med_out", "30"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "source.0.secondary_med_out", "40"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.primary.0.interconnect", "Equinix-TY2-2"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.primary.0.paring_key", ""),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.secondary.0.interconnect", "Equinix-TY2-2"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.secondary.0.paring_key", ""),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "destination.0.qos_type", "guarantee"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "redundant", "true"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "tenant_id", connection.TenantID),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "area", "JPEAST"),
-					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_port_connection_v1.test", "operation_id"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "opetation_status", "Completed"),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "primary_connected_network_address", connection.PrimaryConnectedNetworkAddress),
-					resource.TestCheckResourceAttr("fic_eri_router_paired_to_port_connection_v1.test", "secondary_connected_network_address", connection.SecondaryConnectedNetworkAddress),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "name", rName),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "bandwidth", "50M"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.router_id"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.group_name", "group_1"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.route_filter.0.in", "fullRoute"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.route_filter.0.out", "defaultRoute"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.primary_med_out", "30"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "source.0.secondary_med_out", "40"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.interconnect", "Equinix-TY2-2"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.primary.0.pairing_key", primaryPairingKey),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.interconnect", "@Tokyo-CC2-2"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.secondary.0.pairing_key", secondaryPairingKey),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "destination.0.qos_type", "guarantee"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "redundant", "true"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "tenant_id"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "area", "JPEAST"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "operation_id"),
+					resource.TestCheckResourceAttr("fic_eri_router_paired_to_gcp_connection_v1.test", "operation_status", "Completed"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "primary_connected_network_address"),
+					resource.TestCheckResourceAttrSet("fic_eri_router_paired_to_gcp_connection_v1.test", "secondary_connected_network_address"),
 				),
 			},
 			{
@@ -129,12 +129,12 @@ func testAccCheckRouterPairedToGCPConnectionV1Destroy(s *terraform.State) error 
 	}
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "fic_eri_router_paired_to_port_connection_v1" {
+		if rs.Type != "fic_eri_router_paired_to_gcp_connection_v1" {
 			continue
 		}
 
 		if result := connections.Get(client, rs.Primary.ID); result.Err != nil {
-			var e *fic.ErrDefault404
+			var e fic.ErrDefault404
 			if errors.As(result.Err, &e) {
 				return nil
 			}
@@ -147,7 +147,7 @@ func testAccCheckRouterPairedToGCPConnectionV1Destroy(s *terraform.State) error 
 	return nil
 }
 
-func testAccEriRouterPairedToGCPConnectionConfig(rName, bandwidth, routeFilterIn, routeFilterOut string, primaryMEDOut int, primaryParingKey, secondaryParingKey string) string {
+func testAccEriRouterPairedToGCPConnectionConfig(rName, bandwidth, routeFilterIn, routeFilterOut string, primaryMEDOut int, primaryPairingKey, secondaryPairingKey string) string {
 	return fmt.Sprintf(`
 resource "fic_eri_router_v1" "test" {
 	name = %[1]q
@@ -156,7 +156,7 @@ resource "fic_eri_router_v1" "test" {
 	redundant = true
 }
 
-resource "fic_eri_router_paired_to_port_connection_v1" "test" {
+resource "fic_eri_router_paired_to_gcp_connection_v1" "test" {
 	name = %[1]q
 	bandwidth = %[2]q
 	source {
@@ -166,18 +166,18 @@ resource "fic_eri_router_paired_to_port_connection_v1" "test" {
 			in = %[3]q
 			out = %[4]q
 		}
-		primary_med_out = %d
+		primary_med_out = %[5]d
 	}
 	destination {
 		primary {
 			interconnect = "Equinix-TY2-2"
-			paring_key = %[5]q
+			pairing_key = %[6]q
 		}
 		secondary {
-			interconnect = "Equinix-TY2-2"
-			paring_key = %[6]q
+			interconnect = "@Tokyo-CC2-2"
+			pairing_key = %[7]q
 		}
 	}
 }
-`, rName, bandwidth, routeFilterIn, routeFilterOut, primaryMEDOut, primaryParingKey, secondaryParingKey)
+`, rName, bandwidth, routeFilterIn, routeFilterOut, primaryMEDOut, primaryPairingKey, secondaryPairingKey)
 }
