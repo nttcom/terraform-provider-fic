@@ -190,6 +190,8 @@ func resourcePairedRouterToGCPConnectionCreate(d *schema.ResourceData, meta inte
 		return fmt.Errorf("error creating FIC paired router to GCP connection: %w", err)
 	}
 
+	d.SetId(conn.ID)
+
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"Processing"},
 		Target:     []string{"Completed"},
@@ -203,7 +205,6 @@ func resourcePairedRouterToGCPConnectionCreate(d *schema.ResourceData, meta inte
 		return fmt.Errorf("error waiting for connection (%s) to become ready: %w", conn.ID, err)
 	}
 
-	d.SetId(conn.ID)
 	d.Set("operation_id", conn.OperationID)
 
 	return resourcePairedRouterToGCPConnectionRead(d, meta)
@@ -218,10 +219,6 @@ func routerToGCPConnectionRefresh(c *fic.ServiceClient, id string) func() (inter
 				return nil, "", nil
 			}
 			return nil, "", err
-		}
-
-		if conn.OperationStatus == "Error" {
-			return conn, conn.OperationStatus, fmt.Errorf("operation status is now %s", conn.OperationStatus)
 		}
 
 		return conn, conn.OperationStatus, nil
