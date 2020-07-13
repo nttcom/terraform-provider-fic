@@ -234,7 +234,7 @@ func resourcePairedRouterToGCPConnectionRead(d *schema.ResourceData, meta interf
 
 	conn, err := connections.Get(client, d.Id()).Extract()
 	if err != nil {
-		return CheckDeleted(d, err, "connection")
+		return CheckDeleted(d, err, "error getting FIC paired router to GCP connection")
 	}
 
 	d.Set("name", conn.Name)
