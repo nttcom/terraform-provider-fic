@@ -1,6 +1,7 @@
 package fic
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"sort"
@@ -30,12 +31,13 @@ func BuildRequest(opts interface{}, parent string) (map[string]interface{}, erro
 // CheckDeleted checks the error to see if it's a 404 (Not Found) and, if so,
 // sets the resource ID to the empty string instead of throwing an error.
 func CheckDeleted(d *schema.ResourceData, err error, msg string) error {
-	if _, ok := err.(fic.ErrDefault404); ok {
+	var e fic.ErrDefault404
+	if errors.As(err, &e) {
 		d.SetId("")
 		return nil
 	}
 
-	return fmt.Errorf("%s: %s", msg, err)
+	return fmt.Errorf("%s: %w", msg, err)
 }
 
 // GetRegion returns the region that was specified in the resource. If a
