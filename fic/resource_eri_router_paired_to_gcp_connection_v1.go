@@ -229,7 +229,7 @@ func resourcePairedRouterToGCPConnectionRead(d *schema.ResourceData, meta interf
 	config := meta.(*Config)
 	client, err := config.eriV1Client(GetRegion(d, config))
 	if err != nil {
-		return fmt.Errorf("error creating FIC client: %s", err)
+		return fmt.Errorf("error creating FIC client: %w", err)
 	}
 
 	conn, err := connections.Get(client, d.Id()).Extract()
