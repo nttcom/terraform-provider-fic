@@ -1,6 +1,7 @@
 package fic
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -234,32 +235,33 @@ func resourceEriRouterV1Delete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	client, err := config.eriV1Client(GetRegion(d, config))
 	if err != nil {
-		return fmt.Errorf("Error creating FIC ERI client: %s", err)
+		return fmt.Errorf("error creating FIC ERI client: %w", err)
 	}
 
-	if err := routers.Delete(client, d.Id()).ExtractErr(); err != nil {
-		return CheckDeleted(d, err, "router")
-	}
+	err = resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
+		if err := routers.Delete(client, d.Id()).ExtractErr(); err != nil {
+			var e404 fic.ErrDefault404
+			if errors.As(err, &e404) {
+				return nil
+			}
 
-	log.Printf("[DEBUG] Waiting for router (%s) to delete", d.Id())
+			var e409 fic.ErrDefault409
+			if errors.As(err, &e409) {
+				return resource.RetryableError(err)
+			}
 
-	stateConf := &resource.StateChangeConf{
-		Pending:    []string{"Processing", "Completed"},
-		Target:     []string{"Deleted"},
-		Refresh:    RouterV1StateRefreshFunc(client, d.Id()),
-		Timeout:    d.Timeout(schema.TimeoutDelete),
-		Delay:      10 * time.Second,
-		MinTimeout: 3 * time.Second,
-	}
+			return resource.NonRetryableError(err)
+		}
 
-	_, err = stateConf.WaitForState()
+		return nil
+	})
+
 	if err != nil {
-		return fmt.Errorf(
-			"Error waiting for router (%s) to delete: %s",
-			d.Id(), err)
+		return fmt.Errorf("error deleting FIC ERI router: %w", err)
 	}
 
 	d.SetId("")
+
 	return nil
 }
 
