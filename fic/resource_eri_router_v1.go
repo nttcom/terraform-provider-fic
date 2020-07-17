@@ -235,7 +235,7 @@ func resourceEriRouterV1Delete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	client, err := config.eriV1Client(GetRegion(d, config))
 	if err != nil {
-		return fmt.Errorf("error creating FIC ERI client: %s", err)
+		return fmt.Errorf("error creating FIC ERI client: %w", err)
 	}
 
 	err = resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
