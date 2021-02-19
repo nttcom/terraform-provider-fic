@@ -6,4 +6,18 @@ The default configuration is to do source NAT from "group1" to "group2". This wi
 ECL connections will be made to "group1".
 Be very careful with the values you set for IP addresses, etc., as they can affect your existing environment.
 
+## Run the example
+
 After setting the variables according to your environment, run `terraform plan`, and if everything is ok, run `terraform apply`.
+
+```bash
+terraform init
+terraform plan
+terraform apply
+ ```
+
+## Remove the example
+
+```bash
+terraform destroy
+```
