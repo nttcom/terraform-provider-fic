@@ -7,7 +7,6 @@ variable "fic_api_key" {}
 variable "fic_api_secret" {}
 variable "fic_tenant_id" {}
 
-variable "ecl_auth_url" {}
 variable "ecl_api_key" {}
 variable "ecl_api_secret" {}
 variable "ecl_tenant_id" {}
