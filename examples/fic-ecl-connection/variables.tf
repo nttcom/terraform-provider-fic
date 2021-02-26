@@ -1,5 +1,5 @@
 variable "fic_auth_url" {
-    default = "https://api.ntt.com/keystone/v3/"
+  default = "https://api.ntt.com/keystone/v3/"
 }
 
 #fill in your environment value
