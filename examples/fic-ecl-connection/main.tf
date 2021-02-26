@@ -7,14 +7,6 @@ provider "fic" {
     project_domain_id = "default"
 }
 
-provider "ecl" {
-    auth_url          = var.ecl_auth_url
-    user_name         = var.ecl_api_key
-    password          = var.ecl_api_secret
-    tenant_id         = var.ecl_tenant_id
-    user_domain_id    = "default"
-    project_domain_id = "default"
-}
 
 module "fic-router" {
     source  = "./fic-router"
