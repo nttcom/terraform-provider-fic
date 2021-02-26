@@ -41,7 +41,7 @@ variable "fic_to_ecl_destination" {
 variable "fic_to_ecl_bandwidth" {
     type = string
 }
-variable "fic_to_ecl_primary_adress" {
+variable "fic_to_ecl_primary_address" {
     type = string
 }
 variable "fic_to_ecl_secondary_adress" {
