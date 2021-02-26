@@ -17,7 +17,7 @@ provider "ecl" {
 }
 
 module "fic-router" {
-    source  = "./modules/fic-router"
+    source  = "./fic-router"
 
     fic_router_name = "fic_router_01"
     fic_router_area = "JPEAST"
