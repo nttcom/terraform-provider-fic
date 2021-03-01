@@ -1,4 +1,3 @@
-
 resource "fic_eri_router_v1" "router_01" {
   name            = var.fic_router_name
   area            = var.fic_router_area
