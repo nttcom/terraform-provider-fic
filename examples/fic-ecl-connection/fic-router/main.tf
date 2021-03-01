@@ -45,8 +45,8 @@ resource "fic_eri_router_to_ecl_connection_v1" "connection_ecl_01" {
 
   bandwidth = var.fic_to_ecl_bandwidth
 
-  primary_connected_network_address   = var.fic_to_ecl_primary_adress
-  secondary_connected_network_address = var.fic_to_ecl_secondary_adress
+  primary_connected_network_address   = var.fic_to_ecl_primary_address
+  secondary_connected_network_address = var.fic_to_ecl_secondary_address
 
   depends_on = [fic_eri_nat_component_v1.nat_1]
 }
