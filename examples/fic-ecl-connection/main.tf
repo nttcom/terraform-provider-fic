@@ -37,8 +37,8 @@ module "fic-router" {
   fic_to_ecl_source_bgp_filter_out = "noRoute"
   fic_to_ecl_destination           = "JP4-1"
   fic_to_ecl_bandwidth             = "10M"
-  fic_to_ecl_primary_address        = "10.0.3.0/30"
-  fic_to_ecl_secondary_address      = "10.0.3.4/30"
+  fic_to_ecl_primary_address       = "10.0.3.0/30"
+  fic_to_ecl_secondary_address     = "10.0.3.4/30"
 
   ecl_key    = var.ecl_api_key
   ecl_secret = var.ecl_api_secret
