@@ -248,6 +248,16 @@ func resourceEriRouterToECLConnectionV1Update(d *schema.ResourceData, meta inter
 		return fmt.Errorf("Error creating FIC ERI client: %s", err)
 	}
 
+	var updateOptsList = []connections.UpdateOpts{}
+
+	if d.HasChange("name") {
+		updateOptsList = append(updateOptsList,
+			connections.UpdateOpts{
+				Name: d.Get("name").(string),
+			},
+		)
+	}
+
 	if d.HasChange("source_route_filter_in") || d.HasChange("source_route_filter_out") {
 		routeFilter := connections.RouteFilter{
 			In:  d.Get("source_route_filter_in").(string),
@@ -256,9 +266,22 @@ func resourceEriRouterToECLConnectionV1Update(d *schema.ResourceData, meta inter
 		source := connections.SourceForUpdate{
 			RouteFilter: routeFilter,
 		}
-		updateOpts := connections.UpdateOpts{
-			Source: source,
-		}
+		updateOptsList = append(updateOptsList,
+			connections.UpdateOpts{
+				Source: &source,
+			},
+		)
+	}
+
+	if d.HasChange("bandwidth") {
+		updateOptsList = append(updateOptsList,
+			connections.UpdateOpts{
+				Bandwidth: d.Get("bandwidth").(string),
+			},
+		)
+	}
+
+	for _, updateOpts := range updateOptsList {
 		_, err := connections.Update(client, d.Id(), updateOpts).Extract()
 		if err != nil {
 			return fmt.Errorf("Error activating FIC ERI connection: %s", err)

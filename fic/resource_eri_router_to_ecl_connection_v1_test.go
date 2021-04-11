@@ -32,6 +32,28 @@ func TestAccEriRouterToECLConnectionV1Basic(t *testing.T) {
 				Config: testAccConfigEriRouterToECLConnectionV1Update,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckEriRouterToECLConnectionV1Exists("fic_eri_router_to_ecl_connection_v1.connection_1", &c),
+					resource.TestCheckResourceAttr(
+						"fic_eri_router_to_ecl_connection_v1.connection_1", "name", "terraform_connection_1"),
+					resource.TestCheckResourceAttr(
+						"fic_eri_router_to_ecl_connection_v1.connection_1", "source_route_filter_in", "fullRoute"),
+					resource.TestCheckResourceAttr(
+						"fic_eri_router_to_ecl_connection_v1.connection_1", "source_route_filter_out", "fullRouteWithDefaultRoute"),
+					resource.TestCheckResourceAttr(
+						"fic_eri_router_to_ecl_connection_v1.connection_1", "bandwidth", "10M"),
+				),
+			},
+			resource.TestStep{
+				Config: testAccConfigEriRouterToECLConnectionV1Update2,
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckEriRouterToECLConnectionV1Exists("fic_eri_router_to_ecl_connection_v1.connection_1", &c),
+					resource.TestCheckResourceAttr(
+						"fic_eri_router_to_ecl_connection_v1.connection_1", "name", "terraform_connection_2"),
+					resource.TestCheckResourceAttr(
+						"fic_eri_router_to_ecl_connection_v1.connection_1", "source_route_filter_in", "noRoute"),
+					resource.TestCheckResourceAttr(
+						"fic_eri_router_to_ecl_connection_v1.connection_1", "source_route_filter_out", "noRoute"),
+					resource.TestCheckResourceAttr(
+						"fic_eri_router_to_ecl_connection_v1.connection_1", "bandwidth", "20M"),
 				),
 			},
 		},
@@ -107,7 +129,7 @@ resource "fic_eri_router_to_ecl_connection_v1" "connection_1" {
 	source_route_filter_in = "noRoute"
 	source_route_filter_out = "noRoute"
 
-	destination_interconnect = "ECL-OSA-GU-Z1-01"
+	destination_interconnect = "ECL-TYO-GU-Z1-01"
 	destination_qos_type = "guarantee"
 	destination_ecl_tenant_id = "%s"
 	destination_ecl_api_key = "%s"
@@ -141,13 +163,47 @@ resource "fic_eri_router_to_ecl_connection_v1" "connection_1" {
 	source_route_filter_in = "fullRoute"
 	source_route_filter_out = "fullRouteWithDefaultRoute"
 
-	destination_interconnect = "ECL-OSA-GU-Z1-01"
+	destination_interconnect = "ECL-TYO-GU-Z1-01"
 	destination_qos_type = "guarantee"
 	destination_ecl_tenant_id = "%s"
 	destination_ecl_api_key = "%s"
 	destination_ecl_api_secret_key = "%s"
 
 	bandwidth = "10M"
+
+	primary_connected_network_address = "192.168.0.0/30"
+	secondary_connected_network_address = "192.168.1.0/30"
+}
+`,
+	OS_AREA_NAME,
+	OS_ECL_TENANT_ID,
+	OS_ECL_API_KEY,
+	OS_ECL_API_SECRET_KEY,
+)
+
+var testAccConfigEriRouterToECLConnectionV1Update2 = fmt.Sprintf(`
+resource "fic_eri_router_v1" "router_1" {
+	name = "terraform_router_1"
+	area = "%s"
+	user_ip_address = "10.0.0.0/27"
+	redundant = false
+}
+
+resource "fic_eri_router_to_ecl_connection_v1" "connection_1" {
+	name = "terraform_connection_2"
+	source_router_id = "${fic_eri_router_v1.router_1.id}"
+
+	source_group_name = "group_1"
+	source_route_filter_in = "noRoute"
+	source_route_filter_out = "noRoute"
+
+	destination_interconnect = "ECL-TYO-GU-Z1-01"
+	destination_qos_type = "guarantee"
+	destination_ecl_tenant_id = "%s"
+	destination_ecl_api_key = "%s"
+	destination_ecl_api_secret_key = "%s"
+
+	bandwidth = "20M"
 
 	primary_connected_network_address = "192.168.0.0/30"
 	secondary_connected_network_address = "192.168.1.0/30"
