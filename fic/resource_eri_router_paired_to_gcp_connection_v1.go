@@ -18,7 +18,7 @@ import (
 
 func resourcePairedRouterToGCPConnection() *schema.Resource {
 	validInterconnects := []string{
-		"Equinix-TY2-3", "Equinix-TY2-4", "@Tokyo-CC2-3", "@Tokyo-CC2-4", "Equinix-OS1-1", "Equinix-OS1-3", "NTT-Dojima2-1", "NTT-Dojima2-3",
+		"Equinix-TY2-2", "Equinix-TY2-3", "@Tokyo-CC2-2", "@Tokyo-CC2-3", "Equinix-OS1-1", "Equinix-OS1-3", "NTT-Dojima2-1", "NTT-Dojima2-3",
 	}
 	interconnectSchema := &schema.Resource{
 		Schema: map[string]*schema.Schema{

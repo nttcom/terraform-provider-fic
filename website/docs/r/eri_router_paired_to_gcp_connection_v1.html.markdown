@@ -66,11 +66,11 @@ resource "fic_eri_router_paired_to_gcp_connection_v1" "connection" {
 	}
 	destination {
 		primary {
-			interconnect = "Equinix-TY2-4"
+			interconnect = "Equinix-TY2-2"
 			pairing_key = google_compute_interconnect_attachment.interconnect1.pairing_key
 		}
 		secondary {
-			interconnect = "@Tokyo-CC2-4"
+			interconnect = "@Tokyo-CC2-2"
 			pairing_key = google_compute_interconnect_attachment.interconnect2.pairing_key
 		}
 	}
@@ -118,7 +118,7 @@ The `destination` block supports:
 The `primary` and `secondary` blocks support:
 
 * `interconnect` - (Required) Connecting point.
-  Either "Equinix-TY2-3", "Equinix-TY2-4", "@Tokyo-CC2-3", "@Tokyo-CC2-4", "Equinix-OS1-1", "Equinix-OS1-3",
+  Either "Equinix-TY2-2", "Equinix-TY2-3", "@Tokyo-CC2-2", "@Tokyo-CC2-3", "Equinix-OS1-1", "Equinix-OS1-3",
   "NTT-Dojima2-1" or "NTT-Dojima2-3".
 
 * `pairing_key` - (Required) Paring key of google hybrid interconnect.
