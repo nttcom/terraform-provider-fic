@@ -39,9 +39,9 @@ func TestAccPairedRouterToGCPConnection_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "source.0.route_filter.0.out", "privateRoute"),
 					resource.TestCheckResourceAttr(resourceName, "source.0.primary_med_out", "10"),
 					resource.TestCheckResourceAttr(resourceName, "source.0.secondary_med_out", "20"),
-					resource.TestCheckResourceAttr(resourceName, "destination.0.primary.0.interconnect", "Equinix-TY2-4"),
+					resource.TestCheckResourceAttr(resourceName, "destination.0.primary.0.interconnect", "Equinix-TY2-2"),
 					resource.TestCheckResourceAttrSet(resourceName, "destination.0.primary.0.pairing_key"),
-					resource.TestCheckResourceAttr(resourceName, "destination.0.secondary.0.interconnect", "@Tokyo-CC2-4"),
+					resource.TestCheckResourceAttr(resourceName, "destination.0.secondary.0.interconnect", "@Tokyo-CC2-2"),
 					resource.TestCheckResourceAttrSet(resourceName, "destination.0.secondary.0.pairing_key"),
 					resource.TestCheckResourceAttr(resourceName, "destination.0.qos_type", "guarantee"),
 					resource.TestCheckResourceAttr(resourceName, "redundant", "true"),
@@ -65,9 +65,9 @@ func TestAccPairedRouterToGCPConnection_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "source.0.route_filter.0.out", "defaultRoute"),
 					resource.TestCheckResourceAttr(resourceName, "source.0.primary_med_out", "30"),
 					resource.TestCheckResourceAttr(resourceName, "source.0.secondary_med_out", "40"),
-					resource.TestCheckResourceAttr(resourceName, "destination.0.primary.0.interconnect", "Equinix-TY2-4"),
+					resource.TestCheckResourceAttr(resourceName, "destination.0.primary.0.interconnect", "Equinix-TY2-2"),
 					resource.TestCheckResourceAttrSet(resourceName, "destination.0.primary.0.pairing_key"),
-					resource.TestCheckResourceAttr(resourceName, "destination.0.secondary.0.interconnect", "@Tokyo-CC2-4"),
+					resource.TestCheckResourceAttr(resourceName, "destination.0.secondary.0.interconnect", "@Tokyo-CC2-2"),
 					resource.TestCheckResourceAttrSet(resourceName, "destination.0.secondary.0.pairing_key"),
 					resource.TestCheckResourceAttr(resourceName, "destination.0.qos_type", "guarantee"),
 					resource.TestCheckResourceAttr(resourceName, "redundant", "true"),
@@ -198,11 +198,11 @@ resource "fic_eri_router_paired_to_gcp_connection_v1" "test" {
 	}
 	destination {
 		primary {
-			interconnect = "Equinix-TY2-4"
+			interconnect = "Equinix-TY2-2"
 			pairing_key = google_compute_interconnect_attachment.test1.pairing_key
 		}
 		secondary {
-			interconnect = "@Tokyo-CC2-4"
+			interconnect = "@Tokyo-CC2-2"
 			pairing_key = google_compute_interconnect_attachment.test2.pairing_key
 		}
 	}
