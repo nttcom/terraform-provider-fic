@@ -16,76 +16,76 @@ Manages a V1 Firewall Component resource within Flexible InterConnect.
 
 ```hcl
 resource "fic_eri_router_v1" "router_1" {
-	name = "terraform_router_1"
-	area = "JPEAST"
-	user_ip_address = "10.0.0.0/27"
-	redundant = true
+  name            = "terraform_router_1"
+  area            = "JPEAST"
+  user_ip_address = "10.0.0.0/27"
+  redundant       = true
 }
 
 resource "fic_eri_firewall_component_v1" "firewall_1" {
-    router_id = "${fic_eri_router_v1.router_1.id}"
-    firewall_id = "${fic_eri_router_v1.router_1.firewall_id}"
+  router_id   = fic_eri_router_v1.router_1.id
+  firewall_id = fic_eri_router_v1.router_1.firewall_id
 
-    user_ip_addresses = [
-        "192.168.0.0/30",
-        "192.168.4.0/30",
-        "192.168.8.0/30",
-        "192.168.12.0/30",
-        "192.168.16.0/30",
-        "192.168.20.0/30",
-        "192.168.24.0/30",
-        "192.168.28.0/30"
+  user_ip_addresses = [
+    "192.168.0.0/30",
+    "192.168.4.0/30",
+    "192.168.8.0/30",
+    "192.168.12.0/30",
+    "192.168.16.0/30",
+    "192.168.20.0/30",
+    "192.168.24.0/30",
+    "192.168.28.0/30"
+  ]
+
+  rules {
+    from = "group_1"
+    to   = "group_2"
+    entries {
+      name = "rule-01"
+      match_source_address_sets = [
+        "group1_addset_1"
+      ]
+      match_destination_address_sets = [
+        "group2_addset_1"
+      ]
+      match_application = "app_set_1"
+      action            = "permit"
+    }
+  }
+
+  custom_applications {
+    name             = "google-drive-web"
+    protocol         = "tcp"
+    destination_port = "443"
+  }
+
+  application_sets {
+    name = "app_set_1"
+    applications = [
+      "google-drive-web",
+      "pre-defined-ftp"
     ]
+  }
 
-	rules {
-		from = "group_1"
-        to = "group_2"
-		entries {
-			name = "rule-01"
-			match_source_address_sets = [
-				 "group1_addset_1"
-			]
-			match_destination_address_sets = [
-				 "group2_addset_1"
-			]
-			match_application = "app_set_1"
-			action = "permit"
-		}
-	}
+  routing_group_settings {
+    group_name = "group_1"
+    address_sets {
+      name = "group1_addset_1"
+      addresses = [
+        "172.18.1.0/24"
+      ]
+    }
+  }
 
-	custom_applications {
-    	name = "google-drive-web"
-    	protocol = "tcp"
-		destination_port = "443"
-	}
-
-	application_sets {
-    	name = "app_set_1"
-    	applications = [
-			"google-drive-web",
-            "pre-defined-ftp"
-		]
-	}
-
-	routing_group_settings {
-		group_name = "group_1"
-		address_sets {
-			name = "group1_addset_1"
-			addresses = [
-				"172.18.1.0/24"
-			]
-		}
-	}
-
-	routing_group_settings {
-		group_name = "group_2"
-		address_sets {
-			name = "group2_addset_1"
-			addresses = [
-				"192.168.1.0/24"
-			]
-		}
-	}
+  routing_group_settings {
+    group_name = "group_2"
+    address_sets {
+      name = "group2_addset_1"
+      addresses = [
+        "192.168.1.0/24"
+      ]
+    }
+  }
 }
 ```
 

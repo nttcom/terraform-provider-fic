@@ -16,30 +16,31 @@ Manages a V1 Router to ECL Connection resource within Flexible InterConnect.
 
 ```hcl
 resource "fic_eri_router_v1" "router_1" {
-	name = "terraform_router_1"
-	area = "JPEAST"
-	user_ip_address = "10.0.0.0/27"
-	redundant = false
+  name            = "terraform_router_1"
+  area            = "JPEAST"
+  user_ip_address = "10.0.0.0/27"
+  redundant       = false
 }
 
 resource "fic_eri_router_to_ecl_connection_v1" "connection_1" {
-	name = "terraform_connection_1"
-	source_router_id = "${fic_eri_router_v1.router_1.id}"
+  name             = "terraform_connection_1"
+  source_router_id = fic_eri_router_v1.router_1.id
 
-	source_group_name = "group_1"
-	source_route_filter_in = "noRoute"
-	source_route_filter_out = "noRoute"
+  source_group_name       = "group_1"
+  source_route_filter_in  = "noRoute"
+  source_route_filter_out = "noRoute"
 
-	destination_interconnect = "JP5-1"
-	destination_qos_type = "guarantee"
-	destination_ecl_tenant_id = "215169c6e4fe4fb9b2c0ae12545a422c"
-	destination_ecl_api_key = "62490c125f374dc484ea027c3fc9141b"
-	destination_ecl_api_secret_key = "484ea027c3fc9141"
+  destination_interconnect       = "JP5-1"
+  destination_qos_type           = "guarantee"
+  destination_ecl_tenant_id      = "215169c6e4fe4fb9b2c0ae12545a422c"
+  destination_ecl_api_key        = "62490c125f374dc484ea027c3fc9141b"
+  destination_ecl_api_secret_key = "484ea027c3fc9141"
 
-	bandwidth = "100M"
+  bandwidth = "100M"
 
-	primary_connected_network_address = "10.0.0.0/30"
-	secondary_connected_network_address = "10.0.0.0/30"
+  primary_connected_network_address   = "10.0.0.0/30"
+  secondary_connected_network_address = "10.0.0.0/30"
+}
 ```
 
 ## Argument Reference

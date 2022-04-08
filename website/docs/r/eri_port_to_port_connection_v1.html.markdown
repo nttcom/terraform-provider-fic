@@ -16,36 +16,36 @@ Manages a V1 Port to Port Connection resource within Flexible InterConnect.
 
 ```hcl
 resource "fic_eri_port_v1" "port_1" {
-	name = "terraform_port_1"
-	switch_name = "lxea01comnw1"
-	port_type = "1G"
-	is_activated = true
+  name         = "terraform_port_1"
+  switch_name  = "lxea01comnw1"
+  port_type    = "1G"
+  is_activated = true
 
-	vlan_ranges {
-		start = 1137
-		end = 1152
-	}
+  vlan_ranges {
+    start = 1137
+    end   = 1152
+  }
 }
 
 resource "fic_eri_port_v1" "port_2" {
-	name = "terraform_port_2"
-	switch_name = "lxea01comnw1"
-	port_type = "1G"
-	is_activated = true
+  name         = "terraform_port_2"
+  switch_name  = "lxea01comnw1"
+  port_type    = "1G"
+  is_activated = true
 
-	vlan_ranges {
-		start = 1153
-		end = 1168
-	}
+  vlan_ranges {
+    start = 1153
+    end   = 1168
+  }
 }
 
 resource "fic_eri_port_to_port_connection_v1" "connection_1" {
-	name = "terraform_connection_1"
-	source_port_id = "${fic_eri_port_v1.port_1.id}"
-	source_vlan = "${fic_eri_port_v1.port_1.vlan_ranges.0.start}"
-	destination_port_id = "${fic_eri_port_v1.port_2.id}"
-	destination_vlan = "${fic_eri_port_v1.port_2.vlan_ranges.0.start}"
-	bandwidth = "10M"
+  name                = "terraform_connection_1"
+  source_port_id      = fic_eri_port_v1.port_1.id
+  source_vlan         = fic_eri_port_v1.port_1.vlan_ranges[0].start
+  destination_port_id = fic_eri_port_v1.port_2.id
+  destination_vlan    = fic_eri_port_v1.port_2.vlan_ranges[0].start
+  bandwidth           = "10M"
 }
 ```
 

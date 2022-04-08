@@ -16,10 +16,10 @@ Manages a V1 Router resource within Flexible InterConnect.
 
 ```hcl
 resource "fic_eri_router_v1" "router_1" {
-	name = "terraform_router_1"
-	area = "JPEAST"
-	user_ip_address = "10.0.0.0/27"
-	redundant = true
+  name            = "terraform_router_1"
+  area            = "JPEAST"
+  user_ip_address = "10.0.0.0/27"
+  redundant       = true
 }
 ```
 

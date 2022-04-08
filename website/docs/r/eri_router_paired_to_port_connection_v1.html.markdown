@@ -16,70 +16,70 @@ Manages a V1 Router to Port(Paired) Connection resource within Flexible InterCon
 
 ```hcl
 resource "fic_eri_router_v1" "router_1" {
-	name = "terraform_router_1"
-	area = "JPEAST"
-	user_ip_address = "10.0.0.0/27"
-	redundant = true
+  name            = "terraform_router_1"
+  area            = "JPEAST"
+  user_ip_address = "10.0.0.0/27"
+  redundant       = true
 }
 
 resource "fic_eri_port_v1" "port_1" {
-	name = "terraform_port_1"
-	switch_name = "lxea01comnw1"
-	port_type = "10G"
+  name        = "terraform_port_1"
+  switch_name = "lxea01comnw1"
+  port_type   = "10G"
 
-	vlan_ranges {
-		start = 1137
-		end = 1152
-	}
+  vlan_ranges {
+    start = 1137
+    end   = 1152
+  }
 }
 
 resource "fic_eri_port_v1" "port_2" {
-	name = "terraform_port_2"
-	switch_name = "%s"
-	port_type = "10G"
-	depends_on = ["fic_eri_port_v1.port_1"]
+  name        = "terraform_port_2"
+  switch_name = "%s"
+  port_type   = "10G"
+  depends_on  = [fic_eri_port_v1.port_1]
 
-	vlan_ranges {
-		start = 1153
-		end = 1168
-	}
+  vlan_ranges {
+    start = 1153
+    end   = 1168
+  }
 }
 
 resource "fic_eri_router_paired_to_port_connection_v1" "connection_1" {
-	name = "terraform_connection_1"
-	source_router_id = "${fic_eri_router_v1.router_1.id}"
-	source_group_name = "group_1"
+  name              = "terraform_connection_1"
+  source_router_id  = fic_eri_router_v1.router_1.id
+  source_group_name = "group_1"
 
-	source_information {
-		ip_address = "10.0.1.1/30"
-		as_path_prepend_in = "4"
-		as_path_prepend_out = "4"
-	}
+  source_information {
+    ip_address          = "10.0.1.1/30"
+    as_path_prepend_in  = "4"
+    as_path_prepend_out = "4"
+  }
 
-	source_information {
-		ip_address = "10.0.1.5/30"
-		as_path_prepend_in = "2"
-		as_path_prepend_out = "1"
-	}
+  source_information {
+    ip_address          = "10.0.1.5/30"
+    as_path_prepend_in  = "2"
+    as_path_prepend_out = "1"
+  }
 
-	source_route_filter_in = "fullRoute"
-	source_route_filter_out = "fullRouteWithDefaultRoute"
+  source_route_filter_in  = "fullRoute"
+  source_route_filter_out = "fullRouteWithDefaultRoute"
 
-	destination_information {
-		port_id = "${fic_eri_port_v1.port_1.id}"
-		vlan = "${fic_eri_port_v1.port_1.vlan_ranges.0.start}"
-		ip_address = "10.0.1.2/30"
-		asn = "65000"
-	}
+  destination_information {
+    port_id    = fic_eri_port_v1.port_1.id
+    vlan       = fic_eri_port_v1.port_1.vlan_ranges[0].start
+    ip_address = "10.0.1.2/30"
+    asn        = "65000"
+  }
 
-	destination_information {
-		port_id = "${fic_eri_port_v1.port_2.id}"
-		vlan = "${fic_eri_port_v1.port_2.vlan_ranges.0.start}"
-		ip_address = "10.0.1.6/30"
-		asn = "65000"
-	}
+  destination_information {
+    port_id    = fic_eri_port_v1.port_2.id
+    vlan       = fic_eri_port_v1.port_2.vlan_ranges[0].start
+    ip_address = "10.0.1.6/30"
+    asn        = "65000"
+  }
 
-	bandwidth = "10M"
+  bandwidth = "10M"
 }
 ```
 

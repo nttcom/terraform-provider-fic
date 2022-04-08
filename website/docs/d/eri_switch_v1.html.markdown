@@ -16,10 +16,10 @@ Use this data source to get the ID, the VLAN ranges and Details within Flexible 
 
 ```hcl
 data "fic_eri_switch_v1" "switch_1" {
-	name = "lxea03comnw1"
-	area = "JPEAST"
-    location = "NTTComTokyo(NW1)"
-    port_type = "1G"
+  name      = "lxea03comnw1"
+  area      = "JPEAST"
+  location  = "NTTComTokyo(NW1)"
+  port_type = "1G"
 }
 ```
 

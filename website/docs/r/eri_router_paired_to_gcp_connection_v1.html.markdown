@@ -16,64 +16,64 @@ Manages a V1 Router(Paired) to GCP Connection resource within Flexible InterConn
 
 ```hcl
 resource "google_compute_router" "router1" {
-	name = "tf-router1"
-	network = "default"
-	bgp {
-		asn = 16550
-	}
+  name    = "tf-router1"
+  network = "default"
+  bgp {
+    asn = 16550
+  }
 }
 
 resource "google_compute_router" "router2" {
-	name = "tf-router2"
-	network = "default"
-	bgp {
-		asn = 16550
-	}
+  name    = "tf-router2"
+  network = "default"
+  bgp {
+    asn = 16550
+  }
 }
 
 resource "google_compute_interconnect_attachment" "interconnect1" {
-	name = "tf-interconnect1"
-	router = google_compute_router.router1.id
-	type = "PARTNER"
-	edge_availability_domain = "AVAILABILITY_DOMAIN_1"
+  name                     = "tf-interconnect1"
+  router                   = google_compute_router.router1.id
+  type                     = "PARTNER"
+  edge_availability_domain = "AVAILABILITY_DOMAIN_1"
 }
 
 resource "google_compute_interconnect_attachment" "interconnect2" {
-	name = "tf-interconnect2"
-	router = google_compute_router.router2.id
-	type = "PARTNER"
-	edge_availability_domain = "AVAILABILITY_DOMAIN_2"
+  name                     = "tf-interconnect2"
+  router                   = google_compute_router.router2.id
+  type                     = "PARTNER"
+  edge_availability_domain = "AVAILABILITY_DOMAIN_2"
 }
 
 resource "fic_eri_router_v1" "router" {
-	name = "tf-router"
-	area = "JPEAST"
-	user_ip_address = "10.0.0.0/27"
-	redundant = true
+  name            = "tf-router"
+  area            = "JPEAST"
+  user_ip_address = "10.0.0.0/27"
+  redundant       = true
 }
 
 resource "fic_eri_router_paired_to_gcp_connection_v1" "connection" {
-	name = "tf-connection"
-	bandwidth = "10M"
-	source {
-		router_id = fic_eri_router_v1.router.id
-		group_name = "group_1"
-		route_filter {
-			in = "noRoute"
-			out = "privateRoute"
-		}
-		primary_med_out = 10
-	}
-	destination {
-		primary {
-			interconnect = "Equinix-TY2-2"
-			pairing_key = google_compute_interconnect_attachment.interconnect1.pairing_key
-		}
-		secondary {
-			interconnect = "@Tokyo-CC2-2"
-			pairing_key = google_compute_interconnect_attachment.interconnect2.pairing_key
-		}
-	}
+  name      = "tf-connection"
+  bandwidth = "10M"
+  source {
+    router_id  = fic_eri_router_v1.router.id
+    group_name = "group_1"
+    route_filter {
+      in  = "noRoute"
+      out = "privateRoute"
+    }
+    primary_med_out = 10
+  }
+  destination {
+    primary {
+      interconnect = "Equinix-TY2-2"
+      pairing_key  = google_compute_interconnect_attachment.interconnect1.pairing_key
+    }
+    secondary {
+      interconnect = "@Tokyo-CC2-2"
+      pairing_key  = google_compute_interconnect_attachment.interconnect2.pairing_key
+    }
+  }
 }
 ```
 

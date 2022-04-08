@@ -18,11 +18,20 @@ Use the navigation to the left to read about the available resources.
 
 ```hcl
 # Configure the Flexible InterConnect Provider
+terraform {
+  required_providers {
+    fic = {
+      source  = "nttcom/fic"
+      version = "x.y.z"
+    }
+  }
+}
+
 provider "fic" {
-  user_name   = "my-api-key"
-  password    = "my-api-secret-key"
-  tenant_name = "my-tenant-id"
-  auth_url    = "https://keystone-myregion-fic.api.ntt.com/v3/"
+  user_name         = "my-api-key"
+  password          = "my-api-secret-key"
+  tenant_name       = "my-tenant-id"
+  auth_url          = "https://keystone-myregion-fic.api.ntt.com/v3/"
   user_domain_id    = "default"
   project_domain_id = "default"
 }
