@@ -31,7 +31,7 @@ provider "fic" {
   user_name         = "my-api-key"
   password          = "my-api-secret-key"
   tenant_name       = "my-tenant-id"
-  auth_url          = "https://keystone-myregion-fic.api.ntt.com/v3/"
+  auth_url          = "https://keystone-[region]-fic.api.ntt.com/v3/"
   user_domain_id    = "default"
   project_domain_id = "default"
 }
