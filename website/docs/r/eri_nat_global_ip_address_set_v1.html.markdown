@@ -16,15 +16,15 @@ Manages a V1 NAT Global IP Address Set resource within Flexible InterConnect.
 
 ```hcl
 resource "fic_eri_router_v1" "router_1" {
-	name = "terraform_router_1"
-	area = "JPEAST"
-	user_ip_address = "10.0.0.0/27"
-	redundant = true
+  name            = "terraform_router_1"
+  area            = "JPEAST"
+  user_ip_address = "10.0.0.0/27"
+  redundant       = true
 }
 
 resource "fic_eri_nat_component_v1" "nat_1" {
-  router_id = "${fic_eri_router_v1.router_1.id}"
-  nat_id = "${fic_eri_router_v1.router_1.nat_id}"
+  router_id = fic_eri_router_v1.router_1.id
+  nat_id    = fic_eri_router_v1.router_1.nat_id
 
   user_ip_addresses = [
     "192.168.0.0/30",
@@ -37,26 +37,26 @@ resource "fic_eri_nat_component_v1" "nat_1" {
     "192.168.28.0/30"
   ]
 
-  global_ip_address_sets  {
-    name = "src-set-01"
-    type = "sourceNapt"
+  global_ip_address_sets {
+    name                = "src-set-01"
+    type                = "sourceNapt"
     number_of_addresses = 5
   }
 
-  global_ip_address_sets  {
-    name = "dst-set-01"
-    type = "destinationNat"
+  global_ip_address_sets {
+    name                = "dst-set-01"
+    type                = "destinationNat"
     number_of_addresses = 1
   }
 }
 
 resource "fic_eri_nat_global_ip_address_set_v1" "gip_1" {
-  router_id = "${fic_eri_router_v1.router_1.id}"
-  nat_id = "${fic_eri_router_v1.router_1.nat_id}"
-  depends_on = ["fic_eri_nat_component_v1.nat_1"]
+  router_id  = fic_eri_router_v1.router_1.id
+  nat_id     = fic_eri_router_v1.router_1.nat_id
+  depends_on = [fic_eri_nat_component_v1.nat_1]
 
-  name = "src-set-02"
-  type = "sourceNapt"
+  name                = "src-set-02"
+  type                = "sourceNapt"
   number_of_addresses = 5
 }
 ```

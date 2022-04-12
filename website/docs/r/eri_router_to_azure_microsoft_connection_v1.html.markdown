@@ -16,59 +16,59 @@ Manages a V1 Router to Azure Microsoft Connection resource within Flexible Inter
 
 ```hcl
 resource "fic_eri_router_v1" "router_1" {
-    name = "terraform_router_1"
-    area = "JPWEST"
-    user_ip_address = "10.0.0.0/27"
-    redundant = false
+  name            = "terraform_router_1"
+  area            = "JPWEST"
+  user_ip_address = "10.0.0.0/27"
+  redundant       = false
 }
 
 resource "fic_eri_nat_component_v1" "nat_1" {
-    router_id = "${fic_eri_router_v1.router_1.id}"
-    nat_id = "${fic_eri_router_v1.router_1.nat_id}"
+  router_id = fic_eri_router_v1.router_1.id
+  nat_id    = fic_eri_router_v1.router_1.nat_id
 
-    user_ip_addresses = [
-        "192.168.0.0/30",
-        "192.168.0.4/30",
-        "192.168.0.8/30",
-        "192.168.0.12/30",
-    ]
+  user_ip_addresses = [
+    "192.168.0.0/30",
+    "192.168.0.4/30",
+    "192.168.0.8/30",
+    "192.168.0.12/30",
+  ]
 
-    global_ip_address_sets  {
-        name = "src-set-01"
-        type = "sourceNapt"
-        number_of_addresses = 5
-    }
+  global_ip_address_sets {
+    name                = "src-set-01"
+    type                = "sourceNapt"
+    number_of_addresses = 5
+  }
 }
 
 resource "fic_eri_nat_global_ip_address_set_v1" "gip_1" {
-    depends_on = ["fic_eri_nat_component_v1.nat_1"]
+  depends_on = [fic_eri_nat_component_v1.nat_1]
 
-    router_id = "${fic_eri_router_v1.router_1.id}"
-    nat_id = "${fic_eri_router_v1.router_1.nat_id}"
+  router_id = fic_eri_router_v1.router_1.id
+  nat_id    = fic_eri_router_v1.router_1.nat_id
 
-    name = "src-set-02"
-    type = "sourceNapt"
-    number_of_addresses = 5
+  name                = "src-set-02"
+  type                = "sourceNapt"
+  number_of_addresses = 5
 }
 
 resource "fic_eri_router_to_azure_microsoft_connection_v1" "connection_1" {
-    depends_on = ["fic_eri_nat_component_v1.nat_1"]
+  depends_on = [fic_eri_nat_component_v1.nat_1]
 
-    name = "terraform_connection_1"
+  name = "terraform_connection_1"
 
-    source_router_id = "${fic_eri_router_v1.router_1.id}"
-    source_group_name = "group_1"
-    source_route_filter_in = "noRoute"
-    source_route_filter_out = "noRoute"
+  source_router_id        = fic_eri_router_v1.router_1.id
+  source_group_name       = "group_1"
+  source_route_filter_in  = "noRoute"
+  source_route_filter_out = "noRoute"
 
-    destination_interconnect = "Osaka-1"
-    destination_qos_type = "guarantee"
-    destination_service_key = "service_key"
-    destination_advertised_public_prefixes = [
-        "${fic_eri_nat_global_ip_address_set_v1.gip_1.addresses.1}/32"
-    ]
+  destination_interconnect = "Osaka-1"
+  destination_qos_type     = "guarantee"
+  destination_service_key  = "service_key"
+  destination_advertised_public_prefixes = [
+    "${fic_eri_nat_global_ip_address_set_v1.gip_1.addresses.1}/32"
+  ]
 
-    bandwidth = "40M"
+  bandwidth = "40M"
 }
 ```
 

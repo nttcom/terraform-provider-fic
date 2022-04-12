@@ -16,34 +16,34 @@ Manages a V1 Port to Azure Private Connection resource within Flexible InterConn
 
 ```hcl
 resource "fic_eri_port_v1" "port_1" {
-    name = "terraform_port_1"
-    switch_name = "switch_name"
-    port_type = "1G"
+  name        = "terraform_port_1"
+  switch_name = "switch_name"
+  port_type   = "1G"
 
-    vlan_ranges {
-        start = 497
-        end = 512
-    }
+  vlan_ranges {
+    start = 497
+    end   = 512
+  }
 }
 
 resource "fic_eri_port_to_azure_private_connection_v1" "connection_1" {
-    name = "terraform_connection_1"
+  name = "terraform_connection_1"
 
-    source_primary_port_id = "${fic_eri_port_v1.port_1.id}"
-    source_primary_vlan = 497
-    source_secondary_port_id = "${fic_eri_port_v1.port_1.id}"
-    source_secondary_vlan = 498
-    source_asn = "65530"
+  source_primary_port_id   = fic_eri_port_v1.port_1.id
+  source_primary_vlan      = 497
+  source_secondary_port_id = fic_eri_port_v1.port_1.id
+  source_secondary_vlan    = 498
+  source_asn               = "65530"
 
-    destination_interconnect = "Osaka-1"
-    destination_qos_type = "guarantee"
-    destination_service_key = "service_key"
-    destination_shared_key = "shared_key"
+  destination_interconnect = "Osaka-1"
+  destination_qos_type     = "guarantee"
+  destination_service_key  = "service_key"
+  destination_shared_key   = "shared_key"
 
-    primary_connected_network_address = "10.10.0.0/30"
-    secondary_connected_network_address = "10.20.0.0/30"
+  primary_connected_network_address   = "10.10.0.0/30"
+  secondary_connected_network_address = "10.20.0.0/30"
 
-    bandwidth = "40M"
+  bandwidth = "40M"
 }
 ```
 

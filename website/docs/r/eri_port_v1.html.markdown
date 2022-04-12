@@ -16,9 +16,9 @@ Manages a V1 Port resource within Flexible InterConnect.
 
 ```hcl
 resource "fic_eri_port_v1" "port_1" {
-  name = "terraform_port_1"
-  switch_name = "%s"
-  port_type = "1G"
+  name            = "terraform_port_1"
+  switch_name     = "switch_name"
+  port_type       = "1G"
   number_of_vlans = 16
 }
 ```
@@ -27,11 +27,11 @@ resource "fic_eri_port_v1" "port_1" {
 
 ```hcl
 resource "fic_eri_port_v1" "port_1" {
-  name = "terraform_port_1"
-  switch_name = "%s"
-  port_type = "1G"
+  name            = "terraform_port_1"
+  switch_name     = "switch_name"
+  port_type       = "1G"
   number_of_vlans = 16
-  is_activated = true
+  is_activated    = true
 }
 ```
 
@@ -39,18 +39,18 @@ resource "fic_eri_port_v1" "port_1" {
 
 ```hcl
 resource "fic_eri_port_v1" "port_1" {
-	name = "terraform_port_1"
-	switch_name = "%s"
-	port_type = "1G"
+  name        = "terraform_port_1"
+  switch_name = "switch_name"
+  port_type   = "1G"
 
   vlan_ranges {
     start = 1137
-    end = 1152
+    end   = 1152
   }
 
   vlan_ranges {
     start = 1153
-    end = 1168  
+    end   = 1168
   }
 }
 ```
