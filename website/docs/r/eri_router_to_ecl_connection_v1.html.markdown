@@ -62,7 +62,7 @@ The following arguments are supported:
   Allowed values are "fullRoute", "noRoute" and "fullRouteWithDefaultRoute" .
 
 * `destination_interconnect` - (Required) Target cloud of the connection. 
-  Either "Interconnect-Tokyo-1" or "Interconnect-Osaka-1"" is allowed.
+  See "1.3. FIC-Connection SDPF クラウド/サーバー" in [FIC-Connection SDPF クラウド/サーバー](https://sdpf.ntt.com/services/docs/fic/service-descriptions/connection-ecl/connection-ecl.html#id4)).
 
 * `destination_c_number` - (Required) Destination C number of the connection.
 

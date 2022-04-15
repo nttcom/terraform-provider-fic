@@ -25,6 +25,9 @@ var (
 	OS_ECL_API_SECRET_KEY     = os.Getenv("OS_ECL_API_SECRET_KEY")
 	OS_AZURE_SERVICE_KEY      = os.Getenv("OS_AZURE_SERVICE_KEY")
 	OS_AZURE_SHARED_KEY       = os.Getenv("OS_AZURE_SHARED_KEY")
+	OS_C_NUMBER               = os.Getenv("OS_C_NUMBER")
+	OS_PARENT_CONTRACT_NUMBER = os.Getenv("OS_PARENT_CONTRACT_NUMBER")
+	OS_VPN_NUMBER             = os.Getenv("OS_VPN_NUMBER")
 )
 
 var testAccProviders map[string]terraform.ResourceProvider
@@ -131,6 +134,20 @@ func testAccPreCheckDeprecated(t *testing.T) {
 
 	if OS_DEPRECATED_ENVIRONMENT == "" {
 		t.Skip("This environment does not support deprecated tests")
+	}
+}
+
+func testAccPreCheckUno(t *testing.T) {
+	testAccPreCheckRequiredEnvVars(t)
+
+	if OS_C_NUMBER == "" {
+		t.Skip("OS_C_NUMBER must be set for uno tests")
+	}
+	if OS_PARENT_CONTRACT_NUMBER == "" {
+		t.Skip("OS_PARENT_CONTRACT_NUMBER must be set for uno tests")
+	}
+	if OS_VPN_NUMBER == "" {
+		t.Skip("OS_VPN_NUMBER must be set for uno tests")
 	}
 }
 

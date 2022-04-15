@@ -31,9 +31,9 @@ resource "fic_eri_router_to_uno_connection_v1" "connection_1" {
   source_route_filter_out = "fullRouteWithDefaultRoute"
 
   destination_interconnect           = "Interconnect-Osaka-1"
-  destination_c_number               = "C0250124868"
-  destination_parent_contract_number = "N190005036"
-  destination_vpn_number             = "V19000708"
+  destination_c_number               = "C**********"
+  destination_parent_contract_number = "N*********"
+  destination_vpn_number             = "V********"
   destination_qos_type               = "guarantee"
   destination_route_filter_out       = "fullRoute"
 
@@ -61,7 +61,7 @@ The following arguments are supported:
   Allowed values are "fullRoute", "fullRouteWithDefaultRoute" and "noRoute".
 
 * `destination_interconnect` - (Required) Target cloud of the connection.
-  Either "Interconnect-Tokyo-1" or "Interconnect-Osaka-1" is allowed.
+  See "1.3. FIC-Connection Arcstar Universal One" in [FIC-Connection Arcstar Universal One](https://sdpf.ntt.com/services/docs/fic/service-descriptions/connection-uno/connection-uno.html#id4).
 
 * `destination_c_number` - (Optional) Destination C number of the connection.
 
