@@ -17,6 +17,7 @@ func TestAccEriRouterToUNOConnectionV1Basic(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 			testAccPreCheckArea(t)
+			testAccPreCheckUno(t)
 		},
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckEriRouterToUNOConnectionV1Destroy,
@@ -109,10 +110,10 @@ resource "fic_eri_router_to_uno_connection_v1" "connection_1" {
 	source_route_filter_in = "noRoute"
 	source_route_filter_out = "fullRouteWithDefaultRoute"
 
-	destination_interconnect = "Interconnect-Osaka-1"
-	destination_c_number = "C0250124868"
-	destination_parent_contract_number = "N190005036"
-	destination_vpn_number = "V19000708"
+	destination_interconnect = "Interconnect-Tokyo-1"
+	destination_c_number = "%s"
+	destination_parent_contract_number = "%s"
+	destination_vpn_number = "%s"
 	destination_qos_type = "guarantee"
 	destination_route_filter_out = "fullRoute"
 
@@ -122,6 +123,9 @@ resource "fic_eri_router_to_uno_connection_v1" "connection_1" {
 }
 `,
 	OS_AREA_NAME,
+	OS_C_NUMBER,
+	OS_PARENT_CONTRACT_NUMBER,
+	OS_VPN_NUMBER,
 )
 
 var testAccConfigEriRouterToUNOConnectionV1Update = fmt.Sprintf(`
@@ -140,10 +144,10 @@ resource "fic_eri_router_to_uno_connection_v1" "connection_1" {
 	source_route_filter_in = "fullRoute"
 	source_route_filter_out = "fullRoute"
 
-	destination_interconnect = "Interconnect-Osaka-1"
-	destination_c_number = "C0250124868"
-	destination_parent_contract_number = "N190005036"
-	destination_vpn_number = "V19000708"
+	destination_interconnect = "Interconnect-Tokyo-1"
+	destination_c_number = "%s"
+	destination_parent_contract_number = "%s"
+	destination_vpn_number = "%s"
 	destination_qos_type = "guarantee"
 	destination_route_filter_out = "defaultRoute"
 
@@ -153,4 +157,7 @@ resource "fic_eri_router_to_uno_connection_v1" "connection_1" {
 }
 `,
 	OS_AREA_NAME,
+	OS_C_NUMBER,
+	OS_PARENT_CONTRACT_NUMBER,
+	OS_VPN_NUMBER,
 )

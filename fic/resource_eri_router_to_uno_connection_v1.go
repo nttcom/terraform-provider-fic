@@ -70,7 +70,15 @@ func resourceEriRouterToUNOConnectionV1() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 				ValidateFunc: validation.StringInSlice(
-					[]string{"Interconnect-Tokyo-1", "Interconnect-Osaka-1"}, false),
+					[]string{
+						"Interconnect-Tokyo-1", "Interconnect-Tokyo-2", "Interconnect-Tokyo-3",
+						"Interconnect-Tokyo-4", "Interconnect-Tokyo-5", "Interconnect-Tokyo-6",
+						"Interconnect-Tokyo-7", "Interconnect-Tokyo-8", "Interconnect-Tokyo-9",
+						"Interconnect-Tokyo-10", "Interconnect-Tokyo-11", "Interconnect-Tokyo-12",
+						"Interconnect-Tokyo-13", "Interconnect-Tokyo-14", "Interconnect-Tokyo-15",
+						"Interconnect-Osaka-1", "Interconnect-Osaka-2", "Interconnect-Osaka-3",
+						"Interconnect-Osaka-4", "Interconnect-Osaka-5",
+					}, false),
 			},
 
 			"destination_c_number": &schema.Schema{
