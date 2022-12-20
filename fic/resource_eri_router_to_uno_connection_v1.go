@@ -3,6 +3,7 @@ package fic
 import (
 	"fmt"
 	"log"
+	"regexp"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
@@ -69,16 +70,9 @@ func resourceEriRouterToUNOConnectionV1() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
-				ValidateFunc: validation.StringInSlice(
-					[]string{
-						"Interconnect-Tokyo-1", "Interconnect-Tokyo-2", "Interconnect-Tokyo-3",
-						"Interconnect-Tokyo-4", "Interconnect-Tokyo-5", "Interconnect-Tokyo-6",
-						"Interconnect-Tokyo-7", "Interconnect-Tokyo-8", "Interconnect-Tokyo-9",
-						"Interconnect-Tokyo-10", "Interconnect-Tokyo-11", "Interconnect-Tokyo-12",
-						"Interconnect-Tokyo-13", "Interconnect-Tokyo-14", "Interconnect-Tokyo-15",
-						"Interconnect-Osaka-1", "Interconnect-Osaka-2", "Interconnect-Osaka-3",
-						"Interconnect-Osaka-4", "Interconnect-Osaka-5",
-					}, false),
+				ValidateFunc: validation.StringMatch(
+					regexp.MustCompile(`(Interconnect-Tokyo-|Interconnect-Osaka-)\d+`),
+					"see https://sdpf.ntt.com/services/docs/fic/service-descriptions/connection-uno/connection-uno.html#connectiong-point"),
 			},
 
 			"destination_c_number": &schema.Schema{
