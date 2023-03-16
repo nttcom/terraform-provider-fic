@@ -16,13 +16,15 @@ Use the navigation to the left to read about the available resources.
 
 ## Example Usage
 
+Replace `"x.y.z"` with version. See [https://github.com/nttcom/terraform-provider-fic/releases](https://github.com/nttcom/terraform-provider-fic/releases) for available versions.
+
 ```hcl
 # Configure the Flexible InterConnect Provider
 terraform {
   required_providers {
     fic = {
       source  = "nttcom/fic"
-      version = "0.5.3"
+      version = "x.y.z"
     }
   }
 }
