@@ -22,7 +22,7 @@ terraform {
   required_providers {
     fic = {
       source  = "nttcom/fic"
-      version = "0.5.3"
+      version = "0.5.4"
     }
   }
 }
