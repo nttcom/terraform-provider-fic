@@ -250,8 +250,7 @@ func resourceEriFirewallComponentV1Activate(d *schema.ResourceData, meta interfa
 	log.Printf("[DEBUG] RoutingGroupSettings  are set as: %#v", routingGroupSettings)
 
 	if len(rules) > 0 || len(customApplications) > 0 || len(applicationSets) > 0 || len(routingGroupSettings) > 0 {
-		err := updateFirewall(d, meta)
-		if err != nil {
+		if err := updateFirewall(d, meta); err != nil {
 			return fmt.Errorf("Error updating firewall component: %s", err)
 		}
 	}
