@@ -134,8 +134,8 @@ func testAccCheckEriFirewallComponentV1Destroy(s *terraform.State) error {
 		id := rs.Primary.ID
 		routerID := strings.Split(id, "/")[0]
 		firewallID := strings.Split(id, "/")[1]
-		_, err := firewalls.Get(client, routerID, firewallID).Extract()
-		if err == nil {
+		v, err := firewalls.Get(client, routerID, firewallID).Extract()
+		if err == nil && v.OperationStatus != "Completed" {
 			return fmt.Errorf("Firewall Component still exists")
 		}
 	}

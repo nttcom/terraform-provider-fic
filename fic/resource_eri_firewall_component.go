@@ -250,7 +250,9 @@ func resourceEriFirewallComponentV1Activate(d *schema.ResourceData, meta interfa
 	log.Printf("[DEBUG] RoutingGroupSettings  are set as: %#v", routingGroupSettings)
 
 	if len(rules) > 0 || len(customApplications) > 0 || len(applicationSets) > 0 || len(routingGroupSettings) > 0 {
-		updateFirewall(d, meta)
+		if err := updateFirewall(d, meta); err != nil {
+			return fmt.Errorf("Error updating firewall component: %s", err)
+		}
 	}
 
 	return resourceEriFirewallComponentV1Read(d, meta)
@@ -292,7 +294,9 @@ func resourceEriFirewallComponentV1Update(d *schema.ResourceData, meta interface
 		d.HasChange("application_sets") || d.HasChange("routing_group_settings") {
 
 		log.Printf("[DEBUG] Firewall is going to update...")
-		updateFirewall(d, meta)
+		if err := updateFirewall(d, meta); err != nil {
+			return fmt.Errorf("Error updating firewall component: %s", err)
+		}
 	}
 	return resourceEriFirewallComponentV1Read(d, meta)
 }
@@ -319,7 +323,7 @@ func updateFirewall(d *schema.ResourceData, meta interface{}) error {
 		}
 		_, err := firewalls.Update(client, routerID, firewallID, updateOpts).Extract()
 		if err != nil {
-			return fmt.Errorf("Error updating FIC ERI nat component: %s", err)
+			return fmt.Errorf("Error updating firewall component: %s", err)
 		}
 
 		log.Printf(
@@ -399,7 +403,7 @@ func FirewallComponentV1StateRefreshFunc(client *fic.ServiceClient, id string) r
 }
 
 func getRules(d *schema.ResourceData) []firewalls.Rule {
-	var result []firewalls.Rule
+	result := make([]firewalls.Rule, 0)
 
 	rawRules := d.Get("rules").([]interface{})
 	for _, r := range rawRules {
@@ -451,7 +455,7 @@ func getRules(d *schema.ResourceData) []firewalls.Rule {
 }
 
 func getCustomApplications(d *schema.ResourceData) []firewalls.CustomApplication {
-	var result []firewalls.CustomApplication
+	result := make([]firewalls.CustomApplication, 0)
 	rawCustomApplications := d.Get("custom_applications").([]interface{})
 	for _, r := range rawCustomApplications {
 		name := r.(map[string]interface{})["name"].(string)
@@ -469,7 +473,7 @@ func getCustomApplications(d *schema.ResourceData) []firewalls.CustomApplication
 }
 
 func getApplicationSets(d *schema.ResourceData) []firewalls.ApplicationSet {
-	var result []firewalls.ApplicationSet
+	result := make([]firewalls.ApplicationSet, 0)
 
 	rawApplicationSets := d.Get("application_sets").([]interface{})
 	for _, r := range rawApplicationSets {
@@ -491,7 +495,7 @@ func getApplicationSets(d *schema.ResourceData) []firewalls.ApplicationSet {
 }
 
 func getRoutingGroupSettings(d *schema.ResourceData) []firewalls.RoutingGroupSetting {
-	var result []firewalls.RoutingGroupSetting
+	result := make([]firewalls.RoutingGroupSetting, 0)
 	rawRoutingGroupSettings := d.Get("routing_group_settings").([]interface{})
 	for _, r := range rawRoutingGroupSettings {
 		groupName := r.(map[string]interface{})["group_name"].(string)
