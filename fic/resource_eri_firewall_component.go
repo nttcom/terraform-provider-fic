@@ -294,8 +294,7 @@ func resourceEriFirewallComponentV1Update(d *schema.ResourceData, meta interface
 		d.HasChange("application_sets") || d.HasChange("routing_group_settings") {
 
 		log.Printf("[DEBUG] Firewall is going to update...")
-		err := updateFirewall(d, meta)
-		if err != nil {
+		if err := updateFirewall(d, meta); err != nil {
 			return fmt.Errorf("Error updating firewall component: %s", err)
 		}
 	}
@@ -324,7 +323,7 @@ func updateFirewall(d *schema.ResourceData, meta interface{}) error {
 		}
 		_, err := firewalls.Update(client, routerID, firewallID, updateOpts).Extract()
 		if err != nil {
-			return fmt.Errorf("Error updating FIC ERI nat component: %s", err)
+			return fmt.Errorf("Error updating firewall component: %s", err)
 		}
 
 		log.Printf(
