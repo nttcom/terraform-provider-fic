@@ -229,7 +229,9 @@ func resourceEriNATComponentV1Activate(d *schema.ResourceData, meta interface{})
 	log.Printf("[DEBUG] Destination NAT Rule is set as: %#v", destinationNATRules)
 
 	if len(sourceNAPTRules) > 0 || len(destinationNATRules) > 0 {
-		updateSourceNAPTORDestinationNAT(d, meta)
+		if err := updateSourceNAPTORDestinationNAT(d, meta); err != nil {
+			return fmt.Errorf("Error updating nat component: %s", err)
+		}
 	}
 
 	return resourceEriNATComponentV1Read(d, meta)
@@ -267,7 +269,9 @@ func resourceEriNATComponentV1Update(d *schema.ResourceData, meta interface{}) e
 	log.Printf("[DEBUG] d.HasChange('destination_nat_rules'): %#v", d.HasChange("source_napt_rules"))
 	if d.HasChange("source_napt_rules") || d.HasChange("destination_nat_rules") {
 		log.Printf("[DEBUG] Either Source NAPT or Destination NAT is going to update...")
-		updateSourceNAPTORDestinationNAT(d, meta)
+		if err := updateSourceNAPTORDestinationNAT(d, meta); err != nil {
+			return fmt.Errorf("Error updating nat component: %s", err)
+		}
 	}
 	return resourceEriNATComponentV1Read(d, meta)
 }
