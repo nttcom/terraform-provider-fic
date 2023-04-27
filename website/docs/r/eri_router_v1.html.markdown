@@ -32,7 +32,7 @@ The following arguments are supported:
 
 * `area` - (Required) Area name you create a router.
 
-* `user_ip_address` - (Required; Required if `vlan_ranges` is empy) The IP Address of the router.
+* `user_ip_address` - (Required; Required if `vlan_ranges` is empty) The IP Address of the router.
   It must have prefix 27.
 
 * `redundant` - (Required) The redundant option of the router.
