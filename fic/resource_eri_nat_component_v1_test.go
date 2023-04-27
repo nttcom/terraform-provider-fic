@@ -137,8 +137,8 @@ func testAccCheckEriNATComponentV1Destroy(s *terraform.State) error {
 		id := rs.Primary.ID
 		routerID := strings.Split(id, "/")[0]
 		natID := strings.Split(id, "/")[1]
-		_, err := nats.Get(client, routerID, natID).Extract()
-		if err == nil {
+		v, err := nats.Get(client, routerID, natID).Extract()
+		if err == nil && v.OperationStatus != "Completed" {
 			return fmt.Errorf("NAT Component still exists")
 		}
 	}
