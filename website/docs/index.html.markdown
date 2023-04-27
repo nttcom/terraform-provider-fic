@@ -32,8 +32,8 @@ terraform {
 provider "fic" {
   user_name         = "my-api-key"
   password          = "my-api-secret-key"
-  tenant_name       = "my-tenant-id"
-  auth_url          = "https://keystone-[region]-fic.api.ntt.com/v3/"
+  tenant_id         = "my-tenant-id"
+  auth_url          = "https://api.ntt.com/keystone/v3/"
   user_domain_id    = "default"
   project_domain_id = "default"
 }
